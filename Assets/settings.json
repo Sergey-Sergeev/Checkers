@@ -1,0 +1,8 @@
+{
+    "_opponentCountOfChechers": 15,
+    "_firstMoveTurn": 1,
+    "_boardHeight": 10,
+    "_boardWidth": 10,
+    "_aiSearchDeep": 5,
+    "_isGiveaways": true
+}
