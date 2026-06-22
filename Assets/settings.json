@@ -1,6 +1,6 @@
 {
     "_opponentCountOfChechers": 12,
-    "_firstMoveTurn": 1,
+    "_firstMoveTurn": 0,
     "_boardHeight": 8,
     "_boardWidth": 8,
     "_aiSearchDeep": 8,

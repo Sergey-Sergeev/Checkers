@@ -1,8 +1,8 @@
 {
-    "aiWinsWhite": 0,
-    "aiWinsBlack": 1,
+    "aiWinsWhite": 1,
+    "aiWinsBlack": 0,
     "playerWinsWhite": 0,
     "playerWinsBlack": 0,
     "totalGames": 1,
-    "maxMoves": 56
+    "maxMoves": 77
 }
