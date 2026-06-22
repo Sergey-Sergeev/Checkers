@@ -11,7 +11,7 @@ namespace Assets
 
 		void Start()
 		{
-			float distance = (CheckersBoard.HEIGHT * CheckersBoard.Instance.CellSize.z) / 2 + BOARD_MARGIN;
+			float distance = (GameSettings.BoardHeight * CheckersBoard.Instance.CellSize.z) / 2 + BOARD_MARGIN;
 			float angle = CAMERA_LOOK_AT_ANGLE * (MathF.PI / 180f);
 			float z = MathF.Cos(angle) * -distance;
 			float y = MathF.Sin(angle) * distance;

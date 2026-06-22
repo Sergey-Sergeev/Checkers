@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CheckersBoard : MonoBehaviour
 {
-    public static int HEIGHT;
-    public static int WIDTH;
     public readonly Vector3 CENTRE_COORDS = Vector3.zero;
 
     [SerializeField] private BoardCell _boardCellObj;
@@ -25,8 +23,6 @@ public class CheckersBoard : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        HEIGHT = GameSettings.BoardHeight;
-        WIDTH = GameSettings.BoardWidth;
         CalculateConsts();
         CreateBoard();
     }
@@ -49,9 +45,9 @@ public class CheckersBoard : MonoBehaviour
 
     public void UnHighlightCells()
     {
-        for (int y = 0; y < HEIGHT; y++)
+        for (int y = 0; y < GameSettings.BoardHeight; y++)
         {
-            for (int x = 0; x < WIDTH; x++)
+            for (int x = 0; x < GameSettings.BoardWidth; x++)
             {
                 if (_cells[x, y].IsHighlighted)
                 {
@@ -66,24 +62,24 @@ public class CheckersBoard : MonoBehaviour
     {
         CellSize = _boardCellObj.GetComponent<Renderer>().bounds.size;
 
-        float leftSideX = CENTRE_COORDS.x - (CellSize.x * WIDTH) / 2;
-        float downSideZ = CENTRE_COORDS.z - (CellSize.z * HEIGHT) / 2;
+        float leftSideX = CENTRE_COORDS.x - (CellSize.x * GameSettings.BoardWidth) / 2;
+        float downSideZ = CENTRE_COORDS.z - (CellSize.z * GameSettings.BoardHeight) / 2;
         FirstCellPosition = new Vector3(leftSideX + CellSize.x / 2, CENTRE_COORDS.y, downSideZ + CellSize.z / 2);
     }
 
     private void CreateBoard()
     {
-        _cells = new BoardCell[WIDTH, HEIGHT];
+        _cells = new BoardCell[GameSettings.BoardWidth, GameSettings.BoardHeight];
 
-        for (int y = 0; y < HEIGHT; y++)
+        for (int y = 0; y < GameSettings.BoardHeight; y++)
         {
-            for (int x = 0; x < WIDTH; x++)
+            for (int x = 0; x < GameSettings.BoardWidth; x++)
             {
-                if (x == 0 || y == 0 || x == WIDTH - 1 || y == HEIGHT - 1)
+                if (x == 0 || y == 0 || x == GameSettings.BoardWidth - 1 || y == GameSettings.BoardHeight - 1)
                 {
                     if (x == 0) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 0, 0));
-                    if (y == HEIGHT - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 90, 0));
-                    if (x == WIDTH - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 180, 0));
+                    if (y == GameSettings.BoardHeight - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 90, 0));
+                    if (x == GameSettings.BoardWidth - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 180, 0));
                     if (y == 0) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 270, 0));
                 }
 
@@ -103,9 +99,9 @@ public class CheckersBoard : MonoBehaviour
         }
 
         Instantiate(_cornerObj, GetCellWorldPosition(0, 0), Quaternion.Euler(0, 0, 0));
-        Instantiate(_cornerObj, GetCellWorldPosition(0, HEIGHT - 1), Quaternion.Euler(0, 90, 0));
-        Instantiate(_cornerObj, GetCellWorldPosition(WIDTH - 1, HEIGHT - 1), Quaternion.Euler(0, 180, 0));
-        Instantiate(_cornerObj, GetCellWorldPosition(WIDTH - 1, 0), Quaternion.Euler(0, 270, 0));
+        Instantiate(_cornerObj, GetCellWorldPosition(0, GameSettings.BoardHeight - 1), Quaternion.Euler(0, 90, 0));
+        Instantiate(_cornerObj, GetCellWorldPosition(GameSettings.BoardWidth - 1, GameSettings.BoardHeight - 1), Quaternion.Euler(0, 180, 0));
+        Instantiate(_cornerObj, GetCellWorldPosition(GameSettings.BoardWidth - 1, 0), Quaternion.Euler(0, 270, 0));
     }
 
 

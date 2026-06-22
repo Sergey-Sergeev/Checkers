@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Assets
 {
-    public class PauseTab : UIElement
+    public class PauseTab : UIBehaviour
     {
         [SerializeField] private TMP_Text _title;
         [SerializeField] private Button _menuButton;
         [SerializeField] private Button _saveMovesHistoryButton;
         [SerializeField] private Button _exitButton;
 
+        private bool _exiting = false;
 
         private const string SAVES_FOLDER_NAME = "saves";
         private const float SAVE_MOVES_HISTORY_BUTTON_DELAY_SECONDS = 1f;
@@ -26,9 +29,17 @@ namespace Assets
         {
             _exitButton.onClick.AddListener(ExitButton_onClick);
             _saveMovesHistoryButton.onClick.AddListener(SaveMovesHistoryButton_clicked);
-            _menuButton.onClick.AddListener(() => SceneManager.LoadScene(SceneNames.Menu));
+            _menuButton.onClick.AddListener(MenuButton_onClickAsync);
         }
 
+        private async void MenuButton_onClickAsync()
+        {
+            if (_exiting) return;
+            _exiting = true;
+
+            await CheckersAI.StopCalculating();
+            SceneManager.LoadScene(SceneNames.Menu);
+        }
 
         private void SaveMovesHistoryButton_clicked()
         {
@@ -73,9 +84,14 @@ namespace Assets
             _isTextSaveMoveHistoryButtonChanged = false;
         }
 
-        private void ExitButton_onClick()
+        private async void ExitButton_onClick()
         {
+            if (_exiting) return;
+            _exiting = true;
+
+            await CheckersAI.StopCalculating();
             Application.Quit();
+            _exiting = false;   // in webgl you cant exit with code
         }
 
         protected override void OnDisable()
@@ -86,6 +102,7 @@ namespace Assets
                 RestoreButtonText();
             }
 
+            CheckersAI.RestartCalculating();
             Game.UnPause();
         }
 

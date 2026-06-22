@@ -13,7 +13,6 @@ namespace Assets
         [SerializeField] public static readonly Color CHECKER_COLOR_1 = GameSettings.CheckerColor1;
         [SerializeField] public static readonly Color CHECKER_COLOR_2 = GameSettings.CheckerColor2;
         [SerializeField] public const float CHECKER_MOVE_SPEED = 2.0f;
-        [SerializeField] private static int OPPONENT_CHECKERS_COUNT;
 
         public bool IsAllCheckersMoved { get => _movingCheckersCount == 0; }
         public Checker? Selected { get; private set; } = null;
@@ -22,8 +21,8 @@ namespace Assets
         public MovesHistory MovesHistory { get; private set; }
         public Vector3 CheckerSize { get; private set; }
 
-        private readonly Color _aiColor = GameSettings.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_2 : CHECKER_COLOR_1;
-        private readonly Color _playerColor = GameSettings.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_1 : CHECKER_COLOR_2;
+        private static Color _aiColor;
+        private static Color _playerColor;
 
 
         private bool _isNeedContinueBeatCheckers = false;
@@ -33,8 +32,10 @@ namespace Assets
 
         void Awake()
         {
-            Instance = this;
-            OPPONENT_CHECKERS_COUNT = GameSettings.OpponentCountOfChechers;
+            _aiColor = GameSettings.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_2 : CHECKER_COLOR_1;
+            _playerColor = GameSettings.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_1 : CHECKER_COLOR_2;
+
+            Instance = this;            
             MovesHistory = new MovesHistory();
             CheckerSize = _checkerObj.GetComponent<Renderer>().bounds.size;
         }
@@ -69,11 +70,11 @@ namespace Assets
 
             _checkers = new List<Checker>();
 
-            for (int y = 0; y < CheckersBoard.HEIGHT; y++)
+            for (int y = 0; y < GameSettings.BoardHeight; y++)
             {
-                for (int x = 0; x < CheckersBoard.WIDTH; x++)
+                for (int x = 0; x < GameSettings.BoardWidth; x++)
                 {
-                    if (count == OPPONENT_CHECKERS_COUNT)
+                    if (count == GameSettings.OpponentCountOfChechers)
                     {
                         CurrentPosition = new BoardPosition(_checkers);
                         for (int i = 0; i < _checkers.Count; i++)
@@ -92,7 +93,7 @@ namespace Assets
                     _checkers.Add(checker);
 
                     checker = Instantiate<Checker>(_checkerObj, _spawnPosition, Quaternion.identity);
-                    checker.Set(_aiColor, CheckersBoard.WIDTH - 1 - x, CheckersBoard.HEIGHT - 1 - y, CheckerType.USUAL, OpponentType.AI);
+                    checker.Set(_aiColor, GameSettings.BoardWidth - 1 - x, GameSettings.BoardHeight - 1 - y, CheckerType.USUAL, OpponentType.AI);
                     _checkers.Add(checker);
                 }
             }

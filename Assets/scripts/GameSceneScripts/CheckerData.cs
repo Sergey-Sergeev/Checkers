@@ -39,7 +39,7 @@ namespace Assets
 
             if (Type == CheckerType.USUAL)
             {
-                if ((y == 0 && Opponent == OpponentType.AI) || (y == CheckersBoard.HEIGHT - 1 && Opponent == OpponentType.Player))
+                if ((y == 0 && Opponent == OpponentType.AI) || (y == GameSettings.BoardHeight - 1 && Opponent == OpponentType.Player))
                     Type = CheckerType.KING;
                 else _usualValidMoves = new SimpleMoves(x, y);
             }
@@ -58,14 +58,14 @@ namespace Assets
             {
                 _curCountOfPoints += CheckersAI.USUAL_CHECKER_COUNT_OF_POINTS;
 
-                float endBonus = Y / (float)(CheckersBoard.HEIGHT - 1);
+                float endBonus = Y / (float)(GameSettings.BoardHeight - 1);
                 if (Opponent == OpponentType.AI)
                     endBonus = 1f - endBonus;
 
                 _curCountOfPoints += endBonus * CheckersAI.PROXIMITY_END_OF_BOARD_COUNT_OF_POINTS;
             }
 
-            float center = CheckersBoard.WIDTH / 2f;
+            float center = GameSettings.BoardWidth / 2f;
             float centerBonus = 1f - Mathf.Abs(center - X) / center;
             _curCountOfPoints += centerBonus * CheckersAI.PROXIMITY_CENTER_COUNT_OF_POINTS;
 
@@ -256,7 +256,7 @@ namespace Assets
             Vector2Int checkerPos = new Vector2Int(X, Y);
             Vector2Int cur = checkerPos + dir;
 
-            while (cur.x >= 0 && cur.y >= 0 && cur.x < CheckersBoard.WIDTH && cur.y < CheckersBoard.HEIGHT)
+            while (cur.x >= 0 && cur.y >= 0 && cur.x < GameSettings.BoardWidth && cur.y < GameSettings.BoardHeight)
             {
                 if (position.Data[cur.x, cur.y] == null)
                 {
@@ -319,7 +319,7 @@ namespace Assets
 
                 Vector2Int curPos = pos;
 
-                while (curPos.x >= 0 && curPos.y >= 0 && curPos.x < CheckersBoard.WIDTH && curPos.y < CheckersBoard.HEIGHT)
+                while (curPos.x >= 0 && curPos.y >= 0 && curPos.x < GameSettings.BoardWidth && curPos.y < GameSettings.BoardHeight)
                 {
                     if (position.Data[curPos.x, curPos.y] != null)
                     {
@@ -348,10 +348,10 @@ namespace Assets
         private static Vector2Int? TestBoundMoveCoords(int x, int y)
         {
             if (
-                x >= CheckersBoard.WIDTH ||
+                x >= GameSettings.BoardWidth ||
                 x < 0 ||
                 y < 0 ||
-                y >= CheckersBoard.HEIGHT
+                y >= GameSettings.BoardHeight
                 )
                 return null;
             return new Vector2Int(x, y);

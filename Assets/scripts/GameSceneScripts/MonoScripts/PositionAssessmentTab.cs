@@ -1,9 +1,10 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Assets
 {
-    public class PositionAssessmentTab : UIElement
+    public class PositionAssessmentTab : UIBehaviour
     {
         [SerializeField] private RectTransform _backgroundScaleRect;
         [SerializeField] private RectTransform _foregroundScaleRect;

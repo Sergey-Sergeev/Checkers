@@ -1,13 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 namespace Assets
 {
-    public class MovesHistoryTab : UIElement
+    public class MovesHistoryTab : UIBehaviour
     {
         [SerializeField] private GameObject _moveRowPrefab;
         [SerializeField] private Transform _contentParent;

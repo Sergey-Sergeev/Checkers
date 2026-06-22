@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Assets
 {
@@ -31,7 +32,7 @@ namespace Assets
 
 		public bool IsTabVisible(Tab tab)
 		{
-			return GetUIElement(tab).IsVisible;
+			return GetUIElement(tab).isActiveAndEnabled;
         }
 
 		public void HideTab(Tab tab)
@@ -44,7 +45,7 @@ namespace Assets
             GetUIElement(tab).gameObject.SetActive(true);
         }
 
-		private UIElement GetUIElement(Tab tab)
+		private UIBehaviour GetUIElement(Tab tab)
 		{
 			switch (tab)
 			{

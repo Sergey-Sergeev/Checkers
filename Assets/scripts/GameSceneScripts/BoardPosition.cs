@@ -13,10 +13,10 @@ namespace Assets
 
         public BoardPosition(List<Checker> checkers)
         {
-            Data = new CheckerData[CheckersBoard.WIDTH, CheckersBoard.HEIGHT];
+            Data = new CheckerData[GameSettings.BoardWidth, GameSettings.BoardHeight];
 
-            for (int y = 0; y < CheckersBoard.HEIGHT; y++)
-                for (int x = 0; x < CheckersBoard.WIDTH; x++)
+            for (int y = 0; y < GameSettings.BoardHeight; y++)
+                for (int x = 0; x < GameSettings.BoardWidth; x++)
                     Data[x, y] = null;
 
             for (int i = 0; i < checkers.Count; i++)
@@ -44,8 +44,8 @@ namespace Assets
         {
             int count = 0;
 
-            for (int y = 0; y < CheckersBoard.HEIGHT; y++)
-                for (int x = 0; x < CheckersBoard.WIDTH; x++)
+            for (int y = 0; y < GameSettings.BoardHeight; y++)
+                for (int x = 0; x < GameSettings.BoardWidth; x++)
                     if (Data[x, y] != null && Data[x, y].Opponent == opponent)
                         count++;
 
@@ -57,8 +57,8 @@ namespace Assets
             if ((opponent == OpponentType.Player && PlayerCheckerCount == 0) || (opponent == OpponentType.AI && AICheckerCount == 0))
                 return false;
 
-            for (int y = 0; y < CheckersBoard.HEIGHT; y++)
-                for (int x = 0; x < CheckersBoard.WIDTH; x++)
+            for (int y = 0; y < GameSettings.BoardHeight; y++)
+                for (int x = 0; x < GameSettings.BoardWidth; x++)
                     if (Data[x, y] != null && Data[x, y].Opponent == opponent && Data[x, y].GetAllMovesForChecker(this).Count > 0)
                         return true;
             return false;
@@ -66,8 +66,8 @@ namespace Assets
 
         public bool IsOpponentNeedBeatChecker(OpponentType opponent)
         {
-            for (int y = 0; y < CheckersBoard.HEIGHT; y++)
-                for (int x = 0; x < CheckersBoard.WIDTH; x++)
+            for (int y = 0; y < GameSettings.BoardHeight; y++)
+                for (int x = 0; x < GameSettings.BoardWidth; x++)
                     if (Data[x, y] != null &&
                         Data[x, y].Opponent == opponent &&
                         Data[x, y].IsCheckerNeedBeat(this))
@@ -81,8 +81,8 @@ namespace Assets
                 checkerData != null &&
                 checkerData.X >= 0 &&
                 checkerData.Y >= 0 &&
-                checkerData.X < CheckersBoard.WIDTH &&
-                checkerData.Y < CheckersBoard.HEIGHT &&
+                checkerData.X < GameSettings.BoardWidth &&
+                checkerData.Y < GameSettings.BoardHeight &&
                 Data[checkerData.X, checkerData.Y] == checkerData;
         }
 
@@ -146,9 +146,9 @@ namespace Assets
 
             bool isOpponentNeedBeat = false;
 
-            for (int y = 0; y < CheckersBoard.HEIGHT; y++)
+            for (int y = 0; y < GameSettings.BoardHeight; y++)
             {
-                for (int x = 0; x < CheckersBoard.WIDTH; x++)
+                for (int x = 0; x < GameSettings.BoardWidth; x++)
                 {
                     if (Data[x, y] != null && Data[x, y].Opponent == opponent)
                     {
