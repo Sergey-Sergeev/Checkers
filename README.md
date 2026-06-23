@@ -2,7 +2,7 @@
 
 **Студент:** Сергеев Сергей Владимирович  
 **Группа:** БИН-24-1  
-**Вариант:** Б-28
+**Вариант:** Б-28 
 **Язык:** C#
 
 ## Описание
@@ -156,7 +156,7 @@ cd Checkers
 # 2. Собрать проект под WebGL
 <путь_к_Unity.exe> -projectPath . -batchmode -quit -buildWebGLPlayer ./Build/WebGL
 
- - Где <путь_к_Unity.exe> — например, 
+- Где <путь_к_Unity.exe> — например, 
 для Windows: "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe".
 для macOS: "/Applications/Unity/Hub/Editor/6000.4.10f1/Unity.app/Contents/MacOS/Unity"
 для Linux: "/opt/unity/Editor/Unity"
