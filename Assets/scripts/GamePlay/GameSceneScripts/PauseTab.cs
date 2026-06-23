@@ -115,7 +115,9 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
             if (Game.EndOfGame != EndOfGameType.None)
             {
-                _title.text = $"{(Game.EndOfGame == EndOfGameType.PlayerWin ? Game.PLAYER_STR : Game.AI_STR)} - win";
+                if (Game.EndOfGame == EndOfGameType.Draw)
+                    _title.text = $"Draw";
+                else _title.text = $"{(Game.EndOfGame == EndOfGameType.PlayerWin ? Game.PLAYER_STR : Game.AI_STR)} - win";
             }
         }
 

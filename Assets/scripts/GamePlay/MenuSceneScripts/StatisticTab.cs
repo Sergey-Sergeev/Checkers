@@ -14,6 +14,7 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
         [SerializeField] private TMP_Text _playerWinsWhiteValueText;
         [SerializeField] private TMP_Text _playerWinsBlackValueText;
         [SerializeField] private TMP_Text _totalGamesValueText;
+        [SerializeField] private TMP_Text _drawCountText;
         [SerializeField] private TMP_Text _maxMovesValueText;
 
 
@@ -44,6 +45,7 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
             _playerWinsBlackValueText.text = GameStatistic.PlayerWinsBlack.ToString();
             _totalGamesValueText.text = GameStatistic.TotalGames.ToString();
             _maxMovesValueText.text = GameStatistic.MaxMoves.ToString();
+            _drawCountText.text = GameStatistic.DrawCount.ToString();
         }
     }
 }

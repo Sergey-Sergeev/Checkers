@@ -91,7 +91,21 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
             GameSettings.IsGiveaways = _isGiveawaysToggle.isOn;
 
             int opponentCountOfChechers = int.Parse(_countOfCheckersPerOpponentInputField.text);
-            int maxForCurrentBoard = (GameSettings.BoardWidth / 2) * 3;
+
+            int maxForCurrentBoard = 0;
+
+            if (GameSettings.BoardWidth % 2 == 0)
+            {
+                if (GameSettings.BoardHeight % 2 == 0)
+                    maxForCurrentBoard = (GameSettings.BoardWidth / 2) * (GameSettings.BoardHeight / 2 - 1);
+                else maxForCurrentBoard = (GameSettings.BoardWidth / 2) * (GameSettings.BoardHeight / 2);
+            }
+            else
+            {
+                if (GameSettings.BoardHeight % 2 == 0)
+                    maxForCurrentBoard = (GameSettings.BoardWidth / 2) * (GameSettings.BoardHeight / 2 - 1);
+                else maxForCurrentBoard = (GameSettings.BoardWidth / 2 + 1) * (GameSettings.BoardHeight / 2)  - 1;
+            }
 
             GameSettings.OpponentCountOfChechers = opponentCountOfChechers > maxForCurrentBoard ? maxForCurrentBoard : opponentCountOfChechers;
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.scripts.Core;
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ namespace Assets.scripts.GamePlay
         public static int PlayerWinsBlack => _playerWinsBlack;
         public static int TotalGames => _totalGames;
         public static int MaxMoves => _maxMoves;
+        public static int DrawCount => _drawCount;
 
         private static int _aiWinsWhite;
         private static int _aiWinsBlack;
@@ -19,6 +21,7 @@ namespace Assets.scripts.GamePlay
         private static int _playerWinsBlack;
         private static int _totalGames;
         private static int _maxMoves;
+        private static int _drawCount;
 
         private const string SAVE_FILE_NAME = "stats.json";
 
@@ -32,6 +35,7 @@ namespace Assets.scripts.GamePlay
             public int playerWinsBlack;
             public int totalGames;
             public int maxMoves;
+            public int drawCount;
         }
 
         public static void ReadStatisticFromFile()
@@ -57,6 +61,7 @@ namespace Assets.scripts.GamePlay
                     _playerWinsBlack = data.playerWinsBlack;
                     _totalGames = data.totalGames;
                     _maxMoves = data.maxMoves;
+                    _drawCount = data.drawCount;
                 }
                 else
                 {
@@ -81,7 +86,8 @@ namespace Assets.scripts.GamePlay
                     playerWinsWhite = _playerWinsWhite,
                     playerWinsBlack = _playerWinsBlack,
                     totalGames = _totalGames,
-                    maxMoves = _maxMoves
+                    maxMoves = _maxMoves,
+                    drawCount = _drawCount
                 };
 
                 string json = JsonUtility.ToJson(data, true);
@@ -101,31 +107,37 @@ namespace Assets.scripts.GamePlay
             _playerWinsBlack = 0;
             _totalGames = 0;
             _maxMoves = 0;
+            _drawCount = 0;
         }
 
-        public static void AddGameResult(bool playerWon, bool playerPlayedWhite, int movesCount)
+        public static void AddGameResult(EndOfGameType endOfGame, bool playerPlayedWhite, int movesCount)
         {
             _totalGames++;
 
             if (movesCount > _maxMoves)
                 _maxMoves = movesCount;
 
-            if (playerWon)
+            if (endOfGame == EndOfGameType.PlayerWin)
             {
                 if (playerPlayedWhite)
                     _playerWinsWhite++;
                 else
                     _playerWinsBlack++;
             }
-            else
+            else if (endOfGame == EndOfGameType.AIWin)
             {
                 if (playerPlayedWhite)
                     _aiWinsBlack++;
                 else
                     _aiWinsWhite++;
             }
+            else
+            {
+                _drawCount++;
+            }
 
             SaveStatisticToFile();
+
         }
 
         private static string GetFilePath()

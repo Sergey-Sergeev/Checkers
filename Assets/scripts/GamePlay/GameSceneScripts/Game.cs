@@ -61,7 +61,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             {
                 Pause();
 
-                GameStatistic.AddGameResult(Game.EndOfGame == EndOfGameType.PlayerWin,
+                GameStatistic.AddGameResult(Game.EndOfGame,
                     GameSettings.FirstMoveTurn == OpponentType.Player, BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings.Count);
             }
         }
