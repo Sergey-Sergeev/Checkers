@@ -11,7 +11,7 @@ namespace Tests.EditMode.Shared
         private const int BOARD_HEIGHT = 8;
 
         [Test]
-        public void BoardPosition_Clone_PlayerCheckerCount_IsPreserved()
+        public void BoardPosition_Clone_CheckerCount_IsPreserved()
         {
             // Arrange
             var checkers = new List<CheckerData>
@@ -194,7 +194,7 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void BoardPosition_GetAllPossibleMoves_ReturnsMovesInCorrectDirection()
+        public void BoardPosition_GetAllPossibleMoves_AIMovesBackward()
         {
             // Arrange - AI шашка
             var checkers = new List<CheckerData>

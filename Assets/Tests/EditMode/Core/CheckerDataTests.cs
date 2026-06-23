@@ -23,7 +23,7 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void CheckerData_UsualChecker_NotOnPromotionRow_StaysUsual()
+        public void CheckerData_Constructor_UsualChecker_NotOnPromotionRow_StaysUsual()
         {
             // Arrange
             var checker = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
@@ -33,7 +33,7 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void CheckerData_GetAllMovesForChecker_ReturnsMovesInCorrectDirection()
+        public void CheckerData_GetAllMovesForChecker_AICheckerMovesbackward()
         {
             // Arrange
             var checkers = new List<CheckerData>
@@ -57,7 +57,7 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void CheckerData_PlayerChecker_MovesUpward()
+        public void CheckerData_GetAllMovesForChecker_PlayerChecker_MovesUpward()
         {
             // Arrange
             var checkers = new List<CheckerData>
@@ -99,7 +99,7 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void CheckerData_UsualChecker_CanBeatBackward()
+        public void CheckerData_IsCheckerNeedBeat_ReturnsTrue_WhenCanBeatBackward()
         {
             // Arrange
             var checkers = new List<CheckerData>
@@ -123,11 +123,11 @@ namespace Tests.EditMode.Shared
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.KING, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(1, 1, CheckerType.KING, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 5, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
-            var checker = board.Data[3, 3];
+            var checker = checkers[0];
 
             // Act
             bool needBeat = checker.IsCheckerNeedBeat(board);
@@ -177,5 +177,6 @@ namespace Tests.EditMode.Shared
             Assert.AreEqual(checker1.Type, checker2.Type, "Типы должны совпадать");
             Assert.AreEqual(checker1.Opponent, checker2.Opponent, "Оппоненты должны совпадать");
         }
+          
     }
 }

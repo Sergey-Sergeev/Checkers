@@ -11,6 +11,12 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         [SerializeField] private RectTransform _foregroundScaleRect;
         [SerializeField] private TextMeshProUGUI _scaleText;
 
+        private CheckersAI _checkersAI;
+
+        protected override void Awake()
+        {
+            _checkersAI = FindAnyObjectByType<CheckersAI>(FindObjectsInactive.Include);
+        }
 
         protected override void Start()
         {
@@ -25,9 +31,9 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         private void UpdateScaleValue()
         {
-            if(BoardEntities.Instance == null || BoardEntities.Instance.CurrentPosition == null) return;
+            if (_checkersAI == null || BoardEntities.Instance == null || BoardEntities.Instance.CurrentPosition == null) return;
 
-            float value = CheckersAI.Minimax.GetPositionAssessment(BoardEntities.Instance.CurrentPosition);
+            float value = _checkersAI.Minimax.GetPositionAssessment(BoardEntities.Instance.CurrentPosition);
             _scaleText.text = $"{value:F2}";
             _foregroundScaleRect.offsetMin = new Vector2(
                 _foregroundScaleRect.offsetMin.x,

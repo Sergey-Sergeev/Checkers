@@ -7,13 +7,15 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 {
     public class CheckersAI : MonoBehaviour
     {
-        public bool IsCalculating = false;
+        public MinimaxCore Minimax { get; private set;  }
+        public bool IsCalculating { get; private set; }
+        public OpponentType AIOpponent { get; set; } = OpponentType.AI;
 
-        private static bool _isBlocked = false;
-        public static MinimaxCore Minimax { get; private set;  }
+        private bool _isBlocked = false;    
 
         private void Awake()
         {
+            IsCalculating = false;
             _isBlocked = false;
             Minimax = new MinimaxCore(
                 GameSettings.BoardHeight,
@@ -27,7 +29,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             if (_isBlocked ||
                 IsCalculating ||
                 Game.IsPaused ||
-                Game.CurrentMoveTurn != OpponentType.AI ||
+                Game.CurrentMoveTurn != AIOpponent ||
                 Game.EndOfGame != EndOfGameType.None ||
                 !BoardEntities.Instance.IsAllCheckersMoved) return;
 
@@ -35,12 +37,12 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             StartCoroutine(ProcessAIMove());
         }
 
-        public static async Task RestartCalculating()
+        public async Task RestartCalculating()
         {
             await Minimax.RestartCalculating();
         }
 
-        public static async Task StopCalculating()
+        public async Task StopCalculating()
         {
             await Minimax.StopCalculating();
         }
@@ -49,7 +51,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         {
             var task = Task.Run(async () =>
             {
-                (float points, CheckerMove? move) = await Minimax.GetBestMove(BoardEntities.Instance.CurrentPosition.Clone(), OpponentType.AI);
+                (float points, CheckerMove? move) = await Minimax.GetBestMove(BoardEntities.Instance.CurrentPosition.Clone(), AIOpponent);
                 return move;
             });
 
@@ -62,8 +64,8 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
             while (
                 !_isBlocked && move != null &&
-                (!BoardEntities.Instance.TrySelectChecker(BoardEntities.Instance.CurrentPosition.Data[move.Value.From.x, move.Value.From.y], OpponentType.AI) ||
-                !BoardEntities.Instance.TryMakeMoveSelectedChecker(new Vector2Int(move.Value.To.x, move.Value.To.y), OpponentType.AI))
+                (!BoardEntities.Instance.TrySelectChecker(BoardEntities.Instance.CurrentPosition.Data[move.Value.From.x, move.Value.From.y], AIOpponent) ||
+                !BoardEntities.Instance.TryMakeMoveSelectedChecker(new Vector2Int(move.Value.To.x, move.Value.To.y), AIOpponent))
                 )
             {
                 yield return null;
@@ -71,8 +73,5 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
             IsCalculating = false;
         }
-
-
-
     }
 }

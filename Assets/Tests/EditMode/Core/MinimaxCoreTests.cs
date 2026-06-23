@@ -1,7 +1,8 @@
-using NUnit.Framework;
 using Assets.scripts.Core;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Tests.EditMode.Core
@@ -232,7 +233,7 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsFalse(result.move.HasValue, "Если все шашки на последнем ряду и не дамки, ходов нет");
+            Assert.IsFalse(result.move.HasValue, "ходов нет");
         }
 
         [Test]
@@ -259,7 +260,7 @@ namespace Tests.EditMode.Core
             var checkers = new List<CheckerData>
             {
                 new CheckerData(3, 3, CheckerType.KING, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(4, 4, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(5, 5, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -454,6 +455,55 @@ namespace Tests.EditMode.Core
             move = result.move.Value;
             Assert.IsTrue(board.IsCheckerCanMoveAt(board.Data[move.From.x, move.From.y], move.To), "Выбранный ход должен быть валидным");
             Assert.IsTrue(move.To == new UnityEngine.Vector2Int(2, 6), "Выбранный ход должен быть лучшим");
+        }
+
+        [Test]
+        public async Task GetBestMove_ForKing_WithMultipleBeats_ChoosesSafeBeatOverRiskyMultipleBeat()
+        {
+            // Arrange
+            // Ситуация: у AI есть дамка на (4, 4), которая может бить в разных направлениях
+            var checkers = new List<CheckerData>
+            {
+                // Дамка AI
+                new CheckerData(4, 4, CheckerType.KING, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+        
+                // Шашки противника для боя
+                new CheckerData(6, 6, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 5, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+        
+                // Шашки противника, которые могут сбить дамку AI после первого боя
+                new CheckerData(1, 7, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(7, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),                
+        
+                // Вариант с одной шашкой, но безопасный (дамку не собьют)
+                new CheckerData(7, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+            };
+            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+
+            CheckerMove move = new CheckerMove();
+            // Act 
+            for (int i = 0; i < 6; i++)
+            {                
+                var result = await _minimax.GetBestMove(board, OpponentType.AI);
+
+                Assert.IsTrue(result.move.HasValue, "Должен быть выбран ход");
+                Assert.IsTrue(result.move.Value.IsBeatOpponentChecker, "AI должен бить при возможности");
+                // Проверяем, что выбранный ход валидный
+                move = result.move.Value;
+                Assert.IsTrue(board.IsCheckerCanMoveAt(board.Data[move.From.x, move.From.y], move.To), "Выбранный ход должен быть валидным");
+            }
+
+            // Assert
+            Assert.IsNotNull(move, "Ход должен быть");
+            Assert.IsTrue(new UnityEngine.Vector2Int(0, 0) == move.To ||
+                new UnityEngine.Vector2Int(7, 7) == move.To, "Дамка должна выбрать безопасный бой шашкой");
+
         }
     }
 }

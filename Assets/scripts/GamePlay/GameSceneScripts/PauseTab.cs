@@ -25,9 +25,11 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         private string _originalButtonText;
         private bool _isTextSaveMoveHistoryButtonChanged = false;
 
+        private CheckersAI _checkersAI;
 
         protected override void Start()
         {
+            _checkersAI = FindAnyObjectByType<CheckersAI>(FindObjectsInactive.Include);
             _exitButton.onClick.AddListener(ExitButton_onClick);
             _saveMovesHistoryButton.onClick.AddListener(SaveMovesHistoryButton_clicked);
             _menuButton.onClick.AddListener(MenuButton_onClickAsync);
@@ -38,7 +40,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             if (_exiting) return;
             _exiting = true;
 
-            await CheckersAI.StopCalculating();
+            await _checkersAI.StopCalculating();
             SceneManager.LoadScene(SceneNames.Menu);
         }
 
@@ -90,7 +92,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             if (_exiting) return;
             _exiting = true;
 
-            await CheckersAI.StopCalculating();
+            await _checkersAI.StopCalculating();
             Application.Quit();
             _exiting = false;   // in webgl you cant exit with code
         }
@@ -103,7 +105,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                 RestoreButtonText();
             }
 
-            await CheckersAI.RestartCalculating();
+            await _checkersAI.RestartCalculating();
             Game.UnPause();
         }
 

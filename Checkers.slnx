@@ -2,5 +2,5 @@
   <Project Path="GamePlay.csproj" />
   <Project Path="Tests.csproj" />
   <Project Path="Core.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="PlayModeTests.csproj" />
 </Solution>
