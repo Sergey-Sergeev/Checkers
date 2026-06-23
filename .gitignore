@@ -76,4 +76,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /UIElementsSchema/
 /OutProgram/
-
+/[Aa]ssets/saves/
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.*
+/[Aa]ssets/stats.*
+/[Aa]ssets/settings.*
