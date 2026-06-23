@@ -22,7 +22,7 @@ namespace Assets.scripts.GamePlay
         public static OpponentType FirstMoveTurn = OpponentType.Player;
         public static int BoardHeight = 8;
         public static int BoardWidth = 8;
-        public static int AISearchDeep = 10;
+        public static int AISearchDeep = 6;
         public static bool IsGiveaways = false;
 
 
