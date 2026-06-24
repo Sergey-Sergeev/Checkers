@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -61,7 +62,30 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             if (Game.EndOfGame != EndOfGameType.None)
                 lines.Add(_title.text);
 
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+            string content = "";
+            for (int i = 0; i < lines.Count; i++) content += $"{lines[i]}\n";
+
+            string base64 = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(content));                     
+            Application.ExternalEval(
+                 " (function(data, fname) { " +
+                        " var binary = atob(data); " + 
+                        " var len = binary.length; " + 
+                        " var arr = new Uint8Array(len); " + 
+                        " for (var i = 0; i < len; i++) arr[i] = binary.charCodeAt(i); " + 
+                        " var blob = new Blob([arr]); " + 
+                        " var link = document.createElement('a'); " + 
+                        " link.download = fname; " + 
+                        " link.href = URL.createObjectURL(blob); " + 
+                        " document.body.appendChild(link); " + 
+                        " link.click(); " + 
+                        " document.body.removeChild(link); " + 
+                 " })('" + base64 + "', '" + filePath + "');");                    
+#else
             File.WriteAllLines(filePath, lines);
+#endif
+
 
             TMP_Text text = _saveMovesHistoryButton.GetComponentInChildren<TMP_Text>();
             _originalButtonText = text.text;

@@ -59,7 +59,7 @@ namespace Assets.scripts.GamePlay
             }
         }
 
-        private GameSettings() { }
+        private GameSettings() { _data = GetDefaultData(); }
 
 
         protected override SettingsData GetDefaultData()

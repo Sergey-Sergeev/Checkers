@@ -2,7 +2,7 @@
 
 **Студент:** Сергеев Сергей Владимирович  
 **Группа:** БИН-24-1  
-**Вариант:** Б-28 
+**Вариант:** Б-28
 **Язык:** C#
 
 ## Описание
@@ -33,6 +33,8 @@
 │   ├── Scenes/                                     # Игровые сцены
 │   │   ├── GameScene.unity                         # Сцена с игровым процессом
 │   │   └── MenuScene.unity                         # Сцена главного меню
+│   ├── Editor/
+│   │   ├── BuildScript.cs                          # специальный скрипт для сборки проекта, под WebGL
 │   ├── Scripts/                                    # Модули
 │   │   ├── Core/                                   # Алгоритмическое ядро (независимая логика)
 │   │   │   ├── DataTypes/                          # Базовые типы данных для ядра
@@ -89,6 +91,7 @@
 │   │       └── PlayMode.meta                       # Мета-файл для папки PlayMode
 │   ├── TextMesh Pro/                               # Ресурсы TextMesh Pro (текстовый UI)
 │   └── InputSystem_Actions.inputactions            # Настройки Input System
+├── Build/                                          # готовый, собранный проект 
 ├── Packages/                                       # Управление пакетами Unity (зависимости)
 ├── ProjectSettings/                                # Настройки всего проекта Unity
 ├── Dockerfile
@@ -113,21 +116,16 @@
 #### через редактор Unity
 
 ```bash
-# 1. Добавить проект из репозитория в Unity Hub
+# 1. Клонировать репозиторий
+git clone https://github.com/Sergey-Sergeev/Checkers.git
+
+# 2. Добавить проект из репозитория в Unity Hub
 Запустите Unity Hub.
-Нажмите кнопку "Add" (добавить проект).
-Выберите пункт "Add project from repository" (добавить проект из репозитория).
-
-В появившемся окне выберите "GitHub" в качестве источника.
-Авторизуйтесь в GitHub, если потребуется.
-вставьте ссылку: https://github.com/Sergey-Sergeev/Checkers.git в поле Repository.
-в поле "Location" выберите место куда будет клонирован репозиторий.
-
-Нажмите "Add Project" — Unity Hub автоматически клонирует репозиторий и добавит проект в список.
-
+Нажмите кнопку "Add".
+Выберите пункт "Add project from disk"
 Unity определит версию проекта (6000.4.10f1) и предложит установить её, если она отсутствует.
 
-# 2. Открыть проект в Unity
+# 3. Открыть проект в Unity
 В списке проектов Unity Hub нажмите на добавленный проект Checkers.
 Дождитесь загрузки и импорта всех ресурсов.
 
@@ -155,25 +153,36 @@ git clone https://github.com/Sergey-Sergeev/Checkers.git
 cd Checkers
 
 # 2. Собрать проект под WebGL
-<путь_к_Unity.exe> -projectPath . -batchmode -quit -buildWebGLPlayer ./Build/WebGL
+<путь_к_Unity.exe> -projectPath . -batchmode -quit -logFile .\build.log -executeMethod BuildScript.Build
 
-- Где <путь_к_Unity.exe> — например, 
-для Windows: "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe".
-для macOS: "/Applications/Unity/Hub/Editor/6000.4.10f1/Unity.app/Contents/MacOS/Unity"
-для Linux: "/opt/unity/Editor/Unity"
+- Где:
+<путь_к_Unity.exe>
+например может быть: 
+--для Windows: "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe".
+--для macOS: "/Applications/Unity/Hub/Editor/6000.4.10f1/Unity.app/Contents/MacOS/Unity"
+--для Linux: "/opt/unity/Editor/Unity"
+
+-projectPath
+путь к папке проекта
+
+-batchmode
+запуск в режиме без отображения окна редактора
+
+-quit
+сразу выйти после выполнения 
+
+-logFile
+путь куда будет сохранён лог файл
+
+-executeMethod BuildScript.Build
+вызывает специально подготовленный сборочный скрипт
 
 # 3. Запустить игру в браузере
 Перейдите в папку со сборкой и запустите локальный веб-сервер:
-cd Build/WebGL
+cd Build/WebGL/index.html/
 
--- Вариант A (Python 3):
+Запускаем через Python
 python -m http.server 8080
-
--- Вариант B (Node.js с http-server):
-npx http-server -p 8080
-
--- Вариант C (PHP):
-php -S localhost:8080
 
 # 4. Открыть в браузере
 Перейдите по адресу:
@@ -201,10 +210,6 @@ http://localhost:8080
 docker stop checkers-app
 docker rm checkers-app
 
-Сохранение данных между запусками
-- Чтобы настройки (settings.json) и статистика (statistics.json) не терялись при перезапуске контейнера, смонтируйте том:
-docker run -d -p 8080:80 -v "$(pwd)/data:/usr/share/nginx/html/data" --name checkers-app checkers-ai
-
 Примечания:
 Внутри контейнера Unity собирает проект в WebGL автоматически — это может занять 10–20 минут при первой сборке.
 Убедитесь, что Docker установлен и запущен на вашем компьютере.
@@ -214,19 +219,18 @@ docker run -d -p 8080:80 -v "$(pwd)/data:/usr/share/nginx/html/data" --name chec
 
 ## Запуск тестов
 
-В проекте 67 юнит-тестов (EditMode) и 2 интеграционных теста (PlayMode), проверяющих работу алгоритмического ядра и логику игры.
+В проекте 61 юнит-тест (EditMode) и 2 интеграционных теста (PlayMode), проверяющих работу алгоритмического ядра и логику игры.
 
 ```bash
 # 1 через редактор Unity
 # 2 из командной строки (Headless режим)
-# 3 В Docker
 ```
 
 ### через редактор Unity
 
 ```bash
 # 1 Откройте окно Test Runner: в верхнем меню Unity выберите Window > General > Test Runner.
-# 2 В открывшемся окне вы увидите две вкладки: EditMode (67 юнит-тестов) и PlayMode (2 интеграционных теста).
+# 2 В открывшемся окне вы увидите две вкладки: EditMode (61 юнит-тест) и PlayMode (2 интеграционных теста).
 # 3 Выберите нужную вкладку и нажмите кнопку "Run All", чтобы выполнить все тесты в этой группе. Результаты появятся прямо в окне Test Runner.
 ```
 
@@ -234,19 +238,35 @@ docker run -d -p 8080:80 -v "$(pwd)/data:/usr/share/nginx/html/data" --name chec
 
 ```bash
 # Запуск всех EditMode тестов:
-<путь_к_Unity.exe> -projectPath . -runTests -batchmode -testPlatform EditMode
+<путь_к_Unity.exe> -projectPath . -runTests -batchmode -testPlatform EditMode -testResults ./test-results.xml
 
 # Запуск всех PlayMode тестов:
-<путь_к_Unity.exe> -projectPath . -runTests -batchmode -testPlatform PlayMode
-```
+<путь_к_Unity.exe> -projectPath . -runTests -batchmode -testPlatform PlayMode -testResults ./test-results.xml
 
-### В Docker
-```bash
-# Запуск всех EditMode тестов:
-docker run --rm checkers-ai -runTests -batchmode -testPlatform EditMode
+- Где:
+<путь_к_Unity.exe>
+например может быть: 
+--для Windows: "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe".
+--для macOS: "/Applications/Unity/Hub/Editor/6000.4.10f1/Unity.app/Contents/MacOS/Unity"
+--для Linux: "/opt/unity/Editor/Unity"
 
-# Запуск всех PlayMode тестов:
-docker run --rm checkers-ai -runTests -batchmode -testPlatform PlayMode
+-projectPath
+путь к папке проекта
+
+-runTests
+флаг для запуски тестов
+
+-batchmode
+запуск в режиме без отображения окна редактора
+
+-testPlatform
+платформа на которой будут выполняться тесты
+
+-testResults
+путь куда будет сохранены результаты тестов
+
+
+----После завершения тестов появится файл test-results.xml, в котором и будут результаты всех тестов
 ```
 
 ## Зависимости

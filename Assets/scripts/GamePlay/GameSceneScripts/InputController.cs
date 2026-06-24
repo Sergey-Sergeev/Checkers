@@ -24,27 +24,31 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         {
             if (CheckersAI.IsStoppingOrReseting) return;
 
-            foreach (var k in KEYBOARD_INPUTS)
+            if (Keyboard.current != null)
             {
-                if (Keyboard.current[k.Key].wasPressedThisFrame)
+                foreach (var k in KEYBOARD_INPUTS)
                 {
-                    k.Value.Invoke();
+                    if (Keyboard.current[k.Key].wasPressedThisFrame)
+                    {
+                        k.Value.Invoke();
+                    }
                 }
             }
 
-            foreach (var kvp in MOUSE_INPUTS)
+            if (Mouse.current != null)
             {
-                if (IsMouseButtonPressed(kvp.Key))
+                foreach (var kvp in MOUSE_INPUTS)
                 {
-                    kvp.Value.Invoke();
+                    if (IsMouseButtonPressed(kvp.Key))
+                    {
+                        kvp.Value.Invoke();
+                    }
                 }
             }
         }
 
         private bool IsMouseButtonPressed(MouseButton button)
         {
-            if (Mouse.current == null) return false;
-
             switch (button)
             {
                 case MouseButton.Left:

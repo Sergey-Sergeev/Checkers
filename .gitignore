@@ -6,7 +6,7 @@
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
-/[Bb]uild/
+# /[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
@@ -76,7 +76,7 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /UIElementsSchema/
 
-# /OutProgram/
+/OutProgram/
 
 /[Aa]ssets/saves/
 /[Aa]ssets/_Recovery/
