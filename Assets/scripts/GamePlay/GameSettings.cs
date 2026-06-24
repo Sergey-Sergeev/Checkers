@@ -1,130 +1,155 @@
 ﻿using Assets.scripts.Core;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 namespace Assets.scripts.GamePlay
 {
-    public static class GameSettings
+    [System.Serializable]
+    public class SettingsData
+    {
+        public int opponentCountOfChechers;
+        public OpponentType firstMoveTurn;
+        public int boardHeight;
+        public int boardWidth;
+        public int aiSearchDeep;
+        public bool isGiveaways;
+    }
+
+    public class GameSettings : FileStorage<SettingsData>
     {
         public const int BOARD_MAX_HEIGHT = 10;
         public const int BOARD_MAX_WIDTH = 10;
         public const int BOARD_MIN_HEIGHT = 4;
         public const int BOARD_MIN_WIDTH = 4;
-        public const int AI_MAX_SEARCH_DEEP = 15;
+        public const int AI_MAX_SEARCH_DEEP = 11;
         public const int AI_MIN_SEARCH_DEEP = 1;
         public const int MAX_COUNT_OF_CHECKERS_FOR_OPPONENT = 20;
         public const int MIN_COUNT_OF_CHECKERS_FOR_OPPONENT = 4;
 
+        public int OpponentCountOfChechers => _data.opponentCountOfChechers;
+        public OpponentType FirstMoveTurn => _data.firstMoveTurn;
+        public int BoardHeight => _data.boardHeight;
+        public int BoardWidth => _data.boardWidth;
+        public int AISearchDeep => _data.aiSearchDeep;
+        public bool IsGiveaways => _data.isGiveaways;
 
-        public static int OpponentCountOfChechers = 12;
-        public static OpponentType FirstMoveTurn = OpponentType.Player;
-        public static int BoardHeight = 8;
-        public static int BoardWidth = 8;
-        public static int AISearchDeep = 6;
-        public static bool IsGiveaways = false;
+        protected override string FileName => "settings.json";
 
+        public Color CellColor1 = Color.black;
+        public Color CellColor2 = Color.white;
+        public Color CheckerColor1 = Color.white;
+        public Color CheckerColor2 = Color.black;
 
-        // Change colors maybe added in the future
-        public static Color CellColor1 = Color.black;
-        public static Color CellColor2 = Color.white;
-        public static Color CheckerColor1 = Color.white;
-        public static Color CheckerColor2 = Color.black;
+        public bool IsCustomBoard = false;
+        public List<CheckerData> CustomBoardPosition = new List<CheckerData>() { };
 
-
-        public static bool IsCustomBoard = false;
-        // Custom boards supports only for developing a while
-        public static List<CheckerData> CustomBoardPosition = new List<CheckerData>() { };
-
-
-        private const string SAVE_FILE_NAME = "settings.json";
+        private SettingsData _data;
+        private static GameSettings _instance;
 
 
-        [System.Serializable]
-        private class SettingsData
+        public static GameSettings Instance
         {
-            public int _opponentCountOfChechers;
-            public OpponentType _firstMoveTurn;
-            public int _boardHeight;
-            public int _boardWidth;
-            public int _aiSearchDeep;
-            public bool _isGiveaways;
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new GameSettings();
+                }
+                return _instance;
+            }
         }
 
-        public static void ReadSettingsFromFile()
+        private GameSettings() { }
+
+
+        protected override SettingsData GetDefaultData()
         {
-            string path = GetFilePath();
-
-            if (!File.Exists(path))
+            return new SettingsData
             {
-                ResetGameSettings();
-                return;
-            }
+                opponentCountOfChechers = 12,
+                firstMoveTurn = OpponentType.Player,
+                boardHeight = 8,
+                boardWidth = 8,
+                aiSearchDeep = 6,
+                isGiveaways = false
+            };
+        }
 
-            try
+        public void LoadData() => _data = Load();
+
+        public void SaveData()
+        {
+            if (_data != null)
+                Save(_data);
+        }
+
+        public void ResetSettings()
+        {
+            _data = GetDefaultData();
+            SaveData();
+        }
+
+        public void SetOpponentCountOfChechers(int value)
+        {
+            if (_data != null && value >= MIN_COUNT_OF_CHECKERS_FOR_OPPONENT && value <= MAX_COUNT_OF_CHECKERS_FOR_OPPONENT)
             {
-                string json = File.ReadAllText(path);
-                SettingsData data = JsonUtility.FromJson<SettingsData>(json);
+                int maxForCurrentBoard = 0;
 
-                if (data != null)
+                if (BoardWidth % 2 == 0)
                 {
-                    OpponentCountOfChechers = data._opponentCountOfChechers;
-                    FirstMoveTurn = data._firstMoveTurn;
-                    BoardHeight = data._boardHeight;
-                    BoardWidth = data._boardWidth;
-                    AISearchDeep = data._aiSearchDeep;
-                    IsGiveaways = data._isGiveaways;
+                    if (BoardHeight % 2 == 0)
+                        maxForCurrentBoard = (BoardWidth / 2) * (BoardHeight / 2 - 1);
+                    else maxForCurrentBoard = (BoardWidth / 2) * (BoardHeight / 2);
                 }
                 else
                 {
-                    ResetGameSettings();
+                    if (BoardHeight % 2 == 0)
+                        maxForCurrentBoard = (BoardWidth / 2) * (BoardHeight / 2 - 1);
+                    else maxForCurrentBoard = (BoardWidth / 2 + 1) * (BoardHeight / 2) - 1;
                 }
-            }
-            catch (Exception e)
-            {
-                ResetGameSettings();
-            }
-        }
-
-        public static void SaveGameSettingsToFile()
-        {
-            try
-            {
-                string path = GetFilePath();
-                SettingsData data = new SettingsData
-                {
-                    _opponentCountOfChechers = OpponentCountOfChechers,
-                    _firstMoveTurn = FirstMoveTurn,
-                    _boardHeight = BoardHeight,
-                    _boardWidth = BoardWidth,
-                    _aiSearchDeep = AISearchDeep,
-                    _isGiveaways = IsGiveaways
-                };
-
-                string json = JsonUtility.ToJson(data, true);
-                File.WriteAllText(path, json);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Fail to save statistic.");
+                
+                _data.opponentCountOfChechers = value > maxForCurrentBoard ? maxForCurrentBoard : value;
+                SaveData();
             }
         }
 
-        public static void ResetGameSettings()
+        public void SetFirstMoveTurn(OpponentType value)
         {
-            OpponentCountOfChechers = 12;
-            FirstMoveTurn = OpponentType.Player;
-            BoardHeight = 8;
-            BoardWidth = 8;
-            AISearchDeep = 10;
-            IsGiveaways = false;
-
+            if (_data != null)
+            {
+                _data.firstMoveTurn = value;
+                SaveData();
+            }
         }
 
-        private static string GetFilePath()
+        public void SetBoardSize(int height, int width)
         {
-            return Application.dataPath + "/" + SAVE_FILE_NAME;
+            if (_data != null &&
+                height >= BOARD_MIN_HEIGHT && height <= BOARD_MAX_HEIGHT &&
+                width >= BOARD_MIN_WIDTH && width <= BOARD_MAX_WIDTH)
+            {
+                _data.boardHeight = height;
+                _data.boardWidth = width;
+                SaveData();
+            }
+        }
+
+        public void SetAISearchDeep(int value)
+        {
+            if (_data != null && value >= AI_MIN_SEARCH_DEEP && value <= AI_MAX_SEARCH_DEEP)
+            {
+                _data.aiSearchDeep = value;
+                SaveData();
+            }
+        }
+
+        public void SetIsGiveaways(bool value)
+        {
+            if (_data != null)
+            {
+                _data.isGiveaways = value;
+                SaveData();
+            }
         }
     }
 }

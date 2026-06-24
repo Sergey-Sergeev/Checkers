@@ -7,8 +7,6 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
     public class Checker : MonoBehaviour
     {
         private const float CHECKER_ROTATE_SPEED = 5;
-        private const float PARTICLES_DESTROY_TIME = 5f;
-        private const float PIXEL_SIZE = 0.1f;
 
         public CheckerData Data;
         public bool IsMoving { get; set; } = false;
@@ -16,7 +14,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         public void Set(Color color, int x, int y, CheckerType type, OpponentType opponent)
         {
             GetComponent<Renderer>().material.color = color;
-            Data = new CheckerData(x, y, type, opponent, GameSettings.BoardHeight, GameSettings.BoardWidth);
+            Data = new CheckerData(x, y, type, opponent, GameSettings.Instance.BoardHeight, GameSettings.Instance.BoardWidth);
 
             if (type == CheckerType.KING)
                 TransformInKing();

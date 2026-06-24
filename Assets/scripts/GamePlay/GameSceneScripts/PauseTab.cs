@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,8 +16,6 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         [SerializeField] private Button _menuButton;
         [SerializeField] private Button _saveMovesHistoryButton;
         [SerializeField] private Button _exitButton;
-
-        private bool _exiting = false;
 
         private const string SAVES_FOLDER_NAME = "saves";
         private const float SAVE_MOVES_HISTORY_BUTTON_DELAY_SECONDS = 1f;
@@ -35,12 +32,9 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             _menuButton.onClick.AddListener(MenuButton_onClickAsync);
         }
 
-        private async void MenuButton_onClickAsync()
+        private void MenuButton_onClickAsync()
         {
-            if (_exiting) return;
-            _exiting = true;
-
-            await _checkersAI.StopCalculating();
+            _ = _checkersAI.StopCalculating();
             SceneManager.LoadScene(SceneNames.Menu);
         }
 
@@ -53,8 +47,8 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
             var lines = new List<string>();
 
-            string opponent1 = GameSettings.FirstMoveTurn == OpponentType.Player ? Game.PLAYER_STR : Game.AI_STR;
-            string opponent2 = GameSettings.FirstMoveTurn == OpponentType.AI ? Game.PLAYER_STR : Game.AI_STR;
+            string opponent1 = GameSettings.Instance.FirstMoveTurn == OpponentType.Player ? Game.PLAYER_STR : Game.AI_STR;
+            string opponent2 = GameSettings.Instance.FirstMoveTurn == OpponentType.AI ? Game.PLAYER_STR : Game.AI_STR;
 
             lines.Add($"N\t|_{opponent1}_| |_{opponent2}_|");
 
@@ -87,17 +81,18 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             _isTextSaveMoveHistoryButtonChanged = false;
         }
 
-        private async void ExitButton_onClick()
+        private void ExitButton_onClick()
         {
-            if (_exiting) return;
-            _exiting = true;
+            _ = _checkersAI.StopCalculating();
 
-            await _checkersAI.StopCalculating();
+#if UNITY_WEBGL && !UNITY_EDITOR // --
+            Application.ExternalEval("window.close();");
+#else
             Application.Quit();
-            _exiting = false;   // in webgl you cant exit with code
+#endif
         }
 
-        protected override async void OnDisable()
+        protected override void OnDisable()
         {
             if (_isTextSaveMoveHistoryButtonChanged)
             {
@@ -105,7 +100,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                 RestoreButtonText();
             }
 
-            await _checkersAI.RestartCalculating();
+            _ = _checkersAI.RestartCalculating();
             Game.UnPause();
         }
 

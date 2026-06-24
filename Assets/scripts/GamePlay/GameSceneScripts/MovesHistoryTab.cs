@@ -29,8 +29,8 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             var move2Text = headers.transform.GetChild(2).GetComponent<TMP_Text>();
 
             nText.text = "#";
-            move1Text.text = GameSettings.FirstMoveTurn == OpponentType.Player ? Game.PLAYER_STR : Game.AI_STR;
-            move2Text.text = GameSettings.FirstMoveTurn == OpponentType.AI ? Game.PLAYER_STR : Game.AI_STR;
+            move1Text.text = GameSettings.Instance.FirstMoveTurn == OpponentType.Player ? Game.PLAYER_STR : Game.AI_STR;
+            move2Text.text = GameSettings.Instance.FirstMoveTurn == OpponentType.AI ? Game.PLAYER_STR : Game.AI_STR;
         }
 
         public void AddMove()

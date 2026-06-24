@@ -1,6 +1,4 @@
 ﻿using Assets.scripts.Core;
-using System.Diagnostics;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Assets.scripts.GamePlay.GameSceneScripts
@@ -15,7 +13,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         private void Awake()
         {
-            CurrentMoveTurn = GameSettings.FirstMoveTurn;
+            CurrentMoveTurn = GameSettings.Instance.FirstMoveTurn;
             EndOfGame = EndOfGameType.None;
         }
 
@@ -49,7 +47,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                      BoardEntities.Instance.MovesHistory.IsRuleOf15MovesFulFilled())
                 EndOfGame = EndOfGameType.Draw;
 
-            if (GameSettings.IsGiveaways)
+            if (GameSettings.Instance.IsGiveaways)
             {
                 if (EndOfGame == EndOfGameType.PlayerWin)
                     EndOfGame = EndOfGameType.AIWin;
@@ -61,8 +59,8 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             {
                 Pause();
 
-                GameStatistic.AddGameResult(Game.EndOfGame,
-                    GameSettings.FirstMoveTurn == OpponentType.Player, BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings.Count);
+                GameStatistic.Instance.AddGameResult(Game.EndOfGame,
+                    GameSettings.Instance.FirstMoveTurn == OpponentType.Player, BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings.Count);
             }
         }
     }

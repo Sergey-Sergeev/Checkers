@@ -1,5 +1,4 @@
-﻿using Assets.scripts.Core;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

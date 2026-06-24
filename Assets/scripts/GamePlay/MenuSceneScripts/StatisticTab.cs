@@ -25,7 +25,8 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
             if (_isCreated) return;
             _isCreated = true;
 
-            GameStatistic.ReadStatisticFromFile();
+            GameStatistic.Instance.LoadData();
+
             UpdateStatisticValues();
             _menuButton.onClick.AddListener(() => { _menuTabObj.SetActive(true); gameObject.SetActive(false); });
         }
@@ -39,13 +40,13 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
 
         private void UpdateStatisticValues()
         {
-            _aiWinsWhiteValueText.text = GameStatistic.AIWinsWhite.ToString();
-            _aiWinsBlackValueText.text = GameStatistic.AIWinsBlack.ToString();
-            _playerWinsWhiteValueText.text = GameStatistic.PlayerWinsWhite.ToString();
-            _playerWinsBlackValueText.text = GameStatistic.PlayerWinsBlack.ToString();
-            _totalGamesValueText.text = GameStatistic.TotalGames.ToString();
-            _maxMovesValueText.text = GameStatistic.MaxMoves.ToString();
-            _drawCountText.text = GameStatistic.DrawCount.ToString();
+            _aiWinsWhiteValueText.text = GameStatistic.Instance.AIWinsWhite.ToString();
+            _aiWinsBlackValueText.text = GameStatistic.Instance.AIWinsBlack.ToString();
+            _playerWinsWhiteValueText.text = GameStatistic.Instance.PlayerWinsWhite.ToString();
+            _playerWinsBlackValueText.text = GameStatistic.Instance.PlayerWinsBlack.ToString();
+            _totalGamesValueText.text = GameStatistic.Instance.TotalGames.ToString();
+            _maxMovesValueText.text = GameStatistic.Instance.MaxMoves.ToString();
+            _drawCountText.text = GameStatistic.Instance.DrawCount.ToString();
         }
     }
 }

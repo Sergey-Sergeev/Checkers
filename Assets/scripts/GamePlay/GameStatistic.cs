@@ -1,148 +1,104 @@
 ﻿using Assets.scripts.Core;
-using System;
-using System.IO;
-using UnityEngine;
 
 namespace Assets.scripts.GamePlay
 {
-    public static class GameStatistic
+    [System.Serializable]
+    public class StatData
     {
-        public static int AIWinsWhite => _aiWinsWhite;
-        public static int AIWinsBlack => _aiWinsBlack;
-        public static int PlayerWinsWhite => _playerWinsWhite;
-        public static int PlayerWinsBlack => _playerWinsBlack;
-        public static int TotalGames => _totalGames;
-        public static int MaxMoves => _maxMoves;
-        public static int DrawCount => _drawCount;
+        public int aiWinsWhite;
+        public int aiWinsBlack;
+        public int playerWinsWhite;
+        public int playerWinsBlack;
+        public int totalGames;
+        public int maxMoves;
+        public int drawCount;
+    }
 
-        private static int _aiWinsWhite;
-        private static int _aiWinsBlack;
-        private static int _playerWinsWhite;
-        private static int _playerWinsBlack;
-        private static int _totalGames;
-        private static int _maxMoves;
-        private static int _drawCount;
+    public class GameStatistic : FileStorage<StatData>
+    {
+        public int AIWinsWhite => _data.aiWinsWhite;
+        public int AIWinsBlack => _data.aiWinsBlack;
+        public int PlayerWinsWhite => _data.playerWinsWhite;
+        public int PlayerWinsBlack => _data.playerWinsBlack;
+        public int TotalGames => _data.totalGames;
+        public int MaxMoves => _data.maxMoves;
+        public int DrawCount => _data.drawCount;
 
-        private const string SAVE_FILE_NAME = "stats.json";
+        protected override string FileName => "stats.json";
 
+        private StatData _data;
+        private static GameStatistic _instance;
 
-        [System.Serializable]
-        private class StatData
+        public static GameStatistic Instance
         {
-            public int aiWinsWhite;
-            public int aiWinsBlack;
-            public int playerWinsWhite;
-            public int playerWinsBlack;
-            public int totalGames;
-            public int maxMoves;
-            public int drawCount;
-        }
-
-        public static void ReadStatisticFromFile()
-        {
-            string path = GetFilePath();
-
-            if (!File.Exists(path))
+            get
             {
-                ResetStatistics();
-                return;
-            }
-
-            try
-            {
-                string json = File.ReadAllText(path);
-                StatData data = JsonUtility.FromJson<StatData>(json);
-
-                if (data != null)
+                if (_instance == null)
                 {
-                    _aiWinsWhite = data.aiWinsWhite;
-                    _aiWinsBlack = data.aiWinsBlack;
-                    _playerWinsWhite = data.playerWinsWhite;
-                    _playerWinsBlack = data.playerWinsBlack;
-                    _totalGames = data.totalGames;
-                    _maxMoves = data.maxMoves;
-                    _drawCount = data.drawCount;
+                    _instance = new GameStatistic();
                 }
-                else
-                {
-                    ResetStatistics();
-                }
-            }
-            catch (Exception e)
-            {
-                ResetStatistics();
+                return _instance;
             }
         }
 
-        public static void SaveStatisticToFile()
-        {
-            try
-            {
-                string path = GetFilePath();
-                StatData data = new StatData
-                {
-                    aiWinsWhite = _aiWinsWhite,
-                    aiWinsBlack = _aiWinsBlack,
-                    playerWinsWhite = _playerWinsWhite,
-                    playerWinsBlack = _playerWinsBlack,
-                    totalGames = _totalGames,
-                    maxMoves = _maxMoves,
-                    drawCount = _drawCount
-                };
+        private GameStatistic() { }
 
-                string json = JsonUtility.ToJson(data, true);
-                File.WriteAllText(path, json);
-            }
-            catch (Exception e)
+
+        protected override StatData GetDefaultData()
+        {
+            return new StatData
             {
-                Debug.LogError("Fail to save statistic.");
-            }
+                aiWinsWhite = 0,
+                aiWinsBlack = 0,
+                playerWinsWhite = 0,
+                playerWinsBlack = 0,
+                totalGames = 0,
+                maxMoves = 0,
+                drawCount = 0
+            };
         }
 
-        public static void ResetStatistics()
-        {
-            _aiWinsWhite = 0;
-            _aiWinsBlack = 0;
-            _playerWinsWhite = 0;
-            _playerWinsBlack = 0;
-            _totalGames = 0;
-            _maxMoves = 0;
-            _drawCount = 0;
-        }
+        public void LoadData() => _data = Load();
+        public void SaveData() { if (_data != null) Save(_data); }
+        public void ResetStatistics() { _data = GetDefaultData(); SaveData(); }
 
-        public static void AddGameResult(EndOfGameType endOfGame, bool playerPlayedWhite, int movesCount)
+        public void AddGameResult(EndOfGameType endOfGame, bool playerPlayedWhite, int movesCount)
         {
-            _totalGames++;
+            if (_data == null)
+            {
+                _data = GetDefaultData();
+            }
 
-            if (movesCount > _maxMoves)
-                _maxMoves = movesCount;
+            _data.totalGames++;
+
+            if (movesCount > _data.maxMoves)
+                _data.maxMoves = movesCount;
 
             if (endOfGame == EndOfGameType.PlayerWin)
             {
                 if (playerPlayedWhite)
-                    _playerWinsWhite++;
+                    _data.playerWinsWhite++;
                 else
-                    _playerWinsBlack++;
+                    _data.playerWinsBlack++;
             }
             else if (endOfGame == EndOfGameType.AIWin)
             {
                 if (playerPlayedWhite)
-                    _aiWinsBlack++;
+                    _data.aiWinsBlack++;
                 else
-                    _aiWinsWhite++;
+                    _data.aiWinsWhite++;
             }
             else
             {
-                _drawCount++;
+                _data.drawCount++;
             }
 
-            SaveStatisticToFile();
-
+            SaveData();
         }
 
-        private static string GetFilePath()
-        {
-            return Application.dataPath + "/" + SAVE_FILE_NAME;
-        }
+        public static void SaveStatisticToFile() => Instance.SaveData();
+        public static void ResetStatisticsStatic() => Instance.ResetStatistics();
+        public static void AddGameResultStatic(EndOfGameType endOfGame, bool playerPlayedWhite, int movesCount)
+            => Instance.AddGameResult(endOfGame, playerPlayedWhite, movesCount);
     }
 }

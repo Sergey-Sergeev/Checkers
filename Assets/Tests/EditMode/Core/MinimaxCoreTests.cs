@@ -2,8 +2,8 @@ using Assets.scripts.Core;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Tests.EditMode.Core
 {
@@ -28,7 +28,7 @@ namespace Tests.EditMode.Core
         }
 
         [TearDown]
-        public async Task Teardown()
+        public async void Teardown()
         {
             try
             {
@@ -213,8 +213,8 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "AI должен найти ход");
-            Assert.IsTrue(result.move.Value.IsBeatOpponentChecker, "AI должен выбрать взятие, если оно возможно");
+            Assert.IsTrue(result.HasValue, "AI должен найти ход");
+            Assert.IsTrue(result.Value.IsBeatOpponentChecker, "AI должен выбрать взятие, если оно возможно");
         }
 
         [Test]
@@ -233,7 +233,7 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsFalse(result.move.HasValue, "ходов нет");
+            Assert.IsFalse(result.HasValue, "ходов нет");
         }
 
         [Test]
@@ -250,7 +250,7 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.Player);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "Для игрока должен быть найден ход");
+            Assert.IsTrue(result.HasValue, "Для игрока должен быть найден ход");
         }
 
         [Test]
@@ -268,8 +268,8 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "Дамка должна иметь ходы");
-            Assert.IsTrue(result.move.Value.IsBeatOpponentChecker, "Дамка должна бить");
+            Assert.IsTrue(result.HasValue, "Дамка должна иметь ходы");
+            Assert.IsTrue(result.Value.IsBeatOpponentChecker, "Дамка должна бить");
         }
 
         [Test]
@@ -286,8 +286,8 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "Должен быть ход");
-            var move = result.move.Value;
+            Assert.IsTrue(result.HasValue, "Должен быть ход");
+            var move = result.Value;
 
             // Применяем ход и проверяем превращение
             board.MakeMove(move.From, move.To, out _, out _, out bool transformed);
@@ -316,58 +316,10 @@ namespace Tests.EditMode.Core
             var resultDeep = await minimaxDeep.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(resultShallow.move.HasValue, "Мелкий поиск должен вернуть ход");
-            Assert.IsTrue(resultDeep.move.HasValue, "Глубокий поиск должен вернуть ход");
+            Assert.IsTrue(resultShallow.HasValue, "Мелкий поиск должен вернуть ход");
+            Assert.IsTrue(resultDeep.HasValue, "Глубокий поиск должен вернуть ход");
         }
 
-        [Test]
-        public async Task StopCalculating_ActuallyStopsTask()
-        {
-            // Arrange
-            var checkers = new List<CheckerData>();
-            for (int i = 0; i < BOARD_HEIGHT; i++)
-            {
-                for (int j = 0; j < BOARD_WIDTH; j++)
-                {
-                    if ((i + j) % 2 == 1 && (i < 3 && i > 4))
-                    {
-                        var opponent = i < BOARD_HEIGHT / 2 ? OpponentType.Player : OpponentType.AI;
-                        checkers.Add(new CheckerData(i, j, CheckerType.USUAL, opponent, BOARD_HEIGHT, BOARD_WIDTH));
-                    }
-                }
-            }
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
-            var deepMinimax = new MinimaxCore(BOARD_HEIGHT, BOARD_WIDTH, 10, false);
-
-            // Act
-            var task = deepMinimax.GetBestMove(board, OpponentType.AI);
-            await Task.Delay(100);
-            await deepMinimax.StopCalculating();
-            await task;
-
-            // Assert
-            Assert.IsTrue(task.IsCompleted && task.Result.move == null, "Задача должна быть отменена после StopCalculating");
-        }
-
-        [Test]
-        public async Task RestartCalculating_AllowsNewCalculations()
-        {
-            // Arrange
-            var checkers = new List<CheckerData>
-            {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
-            };
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
-
-            // Act - останавливаем и перезапускаем
-            await _minimax.StopCalculating();
-            await _minimax.RestartCalculating();
-
-            var result = await _minimax.GetBestMove(board, OpponentType.AI);
-
-            // Assert
-            Assert.IsTrue(result.move.HasValue, "После RestartCalculating должны быть доступны новые вычисления");
-        }
 
         [Test]
         [Timeout(10000)]
@@ -393,7 +345,7 @@ namespace Tests.EditMode.Core
             var result = await minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "Поиск должен завершиться за отведённое время и вернуть ход");
+            Assert.IsTrue(result.HasValue, "Поиск должен завершиться за отведённое время и вернуть ход");
         }
 
         [Test]
@@ -412,8 +364,8 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "Должен быть найден ход");
-            Assert.IsTrue(result.move.Value.To == new UnityEngine.Vector2Int(5, 5), "Должен быть найден ход");
+            Assert.IsTrue(result.HasValue, "Должен быть найден ход");
+            Assert.IsTrue(result.Value.To == new UnityEngine.Vector2Int(5, 5), "Должен быть найден ход");
         }
 
         [Test]
@@ -434,11 +386,11 @@ namespace Tests.EditMode.Core
             var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "Должен быть выбран ход");
-            Assert.IsTrue(result.move.Value.IsBeatOpponentChecker, "AI должен бить при возможности");
+            Assert.IsTrue(result.HasValue, "Должен быть выбран ход");
+            Assert.IsTrue(result.Value.IsBeatOpponentChecker, "AI должен бить при возможности");
 
             // Проверяем, что выбранный ход валидный
-            var move = result.move.Value;
+            var move = result.Value;
             Assert.IsTrue(board.IsCheckerCanMoveAt(board.Data[move.From.x, move.From.y], move.To), "Выбранный ход должен быть валидным");
 
             board.MakeMove(move.From, move.To, out _, out _, out _);
@@ -448,11 +400,11 @@ namespace Tests.EditMode.Core
             result = await _minimax.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "Должен быть выбран ход");
-            Assert.IsTrue(result.move.Value.IsBeatOpponentChecker, "AI должен бить при возможности");
+            Assert.IsTrue(result.HasValue, "Должен быть выбран ход");
+            Assert.IsTrue(result.Value.IsBeatOpponentChecker, "AI должен бить при возможности");
 
             // Проверяем, что выбранный ход валидный
-            move = result.move.Value;
+            move = result.Value;
             Assert.IsTrue(board.IsCheckerCanMoveAt(board.Data[move.From.x, move.From.y], move.To), "Выбранный ход должен быть валидным");
             Assert.IsTrue(move.To == new UnityEngine.Vector2Int(2, 6), "Выбранный ход должен быть лучшим");
         }
@@ -489,13 +441,13 @@ namespace Tests.EditMode.Core
             CheckerMove move = new CheckerMove();
             // Act 
             for (int i = 0; i < 6; i++)
-            {                
+            {
                 var result = await _minimax.GetBestMove(board, OpponentType.AI);
 
-                Assert.IsTrue(result.move.HasValue, "Должен быть выбран ход");
-                Assert.IsTrue(result.move.Value.IsBeatOpponentChecker, "AI должен бить при возможности");
+                Assert.IsTrue(result.HasValue, "Должен быть выбран ход");
+                Assert.IsTrue(result.Value.IsBeatOpponentChecker, "AI должен бить при возможности");
                 // Проверяем, что выбранный ход валидный
-                move = result.move.Value;
+                move = result.Value;
                 Assert.IsTrue(board.IsCheckerCanMoveAt(board.Data[move.From.x, move.From.y], move.To), "Выбранный ход должен быть валидным");
             }
 

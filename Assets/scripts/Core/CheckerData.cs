@@ -55,15 +55,12 @@ namespace Assets.scripts.Core
 
         public float GetPointsForChecker(BoardPosition position, Func<BoardPosition, CheckerData, float> calculatingPointsFunc)
         {
-            lock (this)
-            {
-                if (this._curCountOfPoints != 0)
-                    return this._curCountOfPoints;
+            if (this._curCountOfPoints != 0)
+                return this._curCountOfPoints;
 
-                _curCountOfPoints = calculatingPointsFunc(position, this);
+            _curCountOfPoints = calculatingPointsFunc(position, this);
 
-                return _curCountOfPoints;
-            }
+            return _curCountOfPoints;
         }
 
 
@@ -74,44 +71,21 @@ namespace Assets.scripts.Core
 
         public IReadOnlyList<CheckerMove> GetAllMovesForChecker(in BoardPosition position)
         {
-            lock (this)
+            if (Type == CheckerType.USUAL)
             {
-                if (Type == CheckerType.USUAL)
-                {                  
 
-                    int hash = GetHashCodeForPosition(position);
+                int hash = GetHashCodeForPosition(position);
 
-                    if (hash != _positionHash || _cachedMoves == null)
-                    {
-                        _positionHash = hash;
-                        _cachedMoves = GetAllMovesAsUsual(position);
-                    }
-                    /*else
-                    {
-                        List<CheckerMove> moves = GetAllMovesAsUsual(position);
-
-                        if (moves.Count != _cachedMoves.Count)
-                        {
-                            Debug.Log("Cach invalid.");
-                            return moves;
-                        }
-
-                        for (int i = 0; i < moves.Count; i++)
-                        {
-                            if (!_cachedMoves.Contains(moves[i]))
-                            {
-                                Debug.Log("Cach invalid.");
-                                return moves;
-                            }
-                        }
-
-                    }*/
-
-                    return _cachedMoves;
-
+                if (hash != _positionHash || _cachedMoves == null)
+                {
+                    _positionHash = hash;
+                    _cachedMoves = GetAllMovesAsUsual(position);
                 }
-                return GetAllMovesAsKing(position);
+
+                return _cachedMoves;
+
             }
+            return GetAllMovesAsKing(position);
         }
 
         private int GetHashCodeForPosition(BoardPosition position)
@@ -257,8 +231,8 @@ namespace Assets.scripts.Core
                     if (isBeatChecker && !isCanContinueBeatingCheckers)
                     {
                         isCanContinueBeatingCheckers = IsKingCanContinueBeating(position, cur, dir);
-                        
-                        if(isCanContinueBeatingCheckers) moves.Clear();
+
+                        if (isCanContinueBeatingCheckers) moves.Clear();
                     }
 
                     if (!isBeatChecker || !isCanContinueBeatingCheckers || IsKingCanContinueBeating(position, cur, dir))
@@ -307,7 +281,7 @@ namespace Assets.scripts.Core
             for (int i = 0; i < allDirs.Length; i++)
             {
                 Vector2Int curDir = allDirs[i];
-                
+
                 if (curDir == (startDir * -1))
                     continue;
 
@@ -317,7 +291,7 @@ namespace Assets.scripts.Core
                 {
                     if (position.Data[curPos.x, curPos.y] != null)
                     {
-                        if (position.Data[curPos.x, curPos.y].Opponent == Opponent) 
+                        if (position.Data[curPos.x, curPos.y].Opponent == Opponent)
                             break;
                         else
                         {

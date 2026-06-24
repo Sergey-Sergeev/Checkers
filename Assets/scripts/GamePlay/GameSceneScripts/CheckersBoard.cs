@@ -47,9 +47,9 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         public void UnHighlightCells()
         {
-            for (int y = 0; y < GameSettings.BoardHeight; y++)
+            for (int y = 0; y < GameSettings.Instance.BoardHeight; y++)
             {
-                for (int x = 0; x < GameSettings.BoardWidth; x++)
+                for (int x = 0; x < GameSettings.Instance.BoardWidth; x++)
                 {
                     if (_cells[x, y].IsHighlighted)
                     {
@@ -64,24 +64,24 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         {
             CellSize = _boardCellObj.GetComponent<Renderer>().bounds.size;
 
-            float leftSideX = CENTRE_COORDS.x - (CellSize.x * GameSettings.BoardWidth) / 2;
-            float downSideZ = CENTRE_COORDS.z - (CellSize.z * GameSettings.BoardHeight) / 2;
+            float leftSideX = CENTRE_COORDS.x - (CellSize.x * GameSettings.Instance.BoardWidth) / 2;
+            float downSideZ = CENTRE_COORDS.z - (CellSize.z * GameSettings.Instance.BoardHeight) / 2;
             FirstCellPosition = new Vector3(leftSideX + CellSize.x / 2, CENTRE_COORDS.y, downSideZ + CellSize.z / 2);
         }
 
         private void CreateBoard()
         {
-            _cells = new BoardCell[GameSettings.BoardWidth, GameSettings.BoardHeight];
+            _cells = new BoardCell[GameSettings.Instance.BoardWidth, GameSettings.Instance.BoardHeight];
 
-            for (int y = 0; y < GameSettings.BoardHeight; y++)
+            for (int y = 0; y < GameSettings.Instance.BoardHeight; y++)
             {
-                for (int x = 0; x < GameSettings.BoardWidth; x++)
+                for (int x = 0; x < GameSettings.Instance.BoardWidth; x++)
                 {
-                    if (x == 0 || y == 0 || x == GameSettings.BoardWidth - 1 || y == GameSettings.BoardHeight - 1)
+                    if (x == 0 || y == 0 || x == GameSettings.Instance.BoardWidth - 1 || y == GameSettings.Instance.BoardHeight - 1)
                     {
                         if (x == 0) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 0, 0));
-                        if (y == GameSettings.BoardHeight - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 90, 0));
-                        if (x == GameSettings.BoardWidth - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 180, 0));
+                        if (y == GameSettings.Instance.BoardHeight - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 90, 0));
+                        if (x == GameSettings.Instance.BoardWidth - 1) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 180, 0));
                         if (y == 0) Instantiate(_lateralObj, GetCellWorldPosition(x, y), Quaternion.Euler(0, 270, 0));
                     }
 
@@ -101,9 +101,9 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             }
 
             Instantiate(_cornerObj, GetCellWorldPosition(0, 0), Quaternion.Euler(0, 0, 0));
-            Instantiate(_cornerObj, GetCellWorldPosition(0, GameSettings.BoardHeight - 1), Quaternion.Euler(0, 90, 0));
-            Instantiate(_cornerObj, GetCellWorldPosition(GameSettings.BoardWidth - 1, GameSettings.BoardHeight - 1), Quaternion.Euler(0, 180, 0));
-            Instantiate(_cornerObj, GetCellWorldPosition(GameSettings.BoardWidth - 1, 0), Quaternion.Euler(0, 270, 0));
+            Instantiate(_cornerObj, GetCellWorldPosition(0, GameSettings.Instance.BoardHeight - 1), Quaternion.Euler(0, 90, 0));
+            Instantiate(_cornerObj, GetCellWorldPosition(GameSettings.Instance.BoardWidth - 1, GameSettings.Instance.BoardHeight - 1), Quaternion.Euler(0, 180, 0));
+            Instantiate(_cornerObj, GetCellWorldPosition(GameSettings.Instance.BoardWidth - 1, 0), Quaternion.Euler(0, 270, 0));
         }
     }
 }

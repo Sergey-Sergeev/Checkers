@@ -10,8 +10,8 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
     {
         [SerializeField] private Vector3 _spawnPosition;
         [SerializeField] private Checker _checkerObj;
-        [SerializeField] public static readonly Color CHECKER_COLOR_1 = GameSettings.CheckerColor1;
-        [SerializeField] public static readonly Color CHECKER_COLOR_2 = GameSettings.CheckerColor2;
+        [SerializeField] public static readonly Color CHECKER_COLOR_1 = GameSettings.Instance.CheckerColor1;
+        [SerializeField] public static readonly Color CHECKER_COLOR_2 = GameSettings.Instance.CheckerColor2;
         [SerializeField] public const float CHECKER_MOVE_SPEED = 2.0f;
 
         public bool IsAllCheckersMoved { get => _movingCheckersCount == 0; }
@@ -32,8 +32,8 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         void Awake()
         {
-            _aiColor = GameSettings.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_2 : CHECKER_COLOR_1;
-            _playerColor = GameSettings.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_1 : CHECKER_COLOR_2;
+            _aiColor = GameSettings.Instance.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_2 : CHECKER_COLOR_1;
+            _playerColor = GameSettings.Instance.FirstMoveTurn == OpponentType.Player ? CHECKER_COLOR_1 : CHECKER_COLOR_2;
 
             Instance = this;            
             MovesHistory = new MovesHistory();
@@ -42,7 +42,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         void Start()
         {
-            if (GameSettings.IsCustomBoard)
+            if (GameSettings.Instance.IsCustomBoard)
                 SetCustomBoard();
             else SetCheckers();
         }
@@ -51,9 +51,9 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         {
             _checkers = new List<Checker>();
 
-            for (int i = 0; i < GameSettings.CustomBoardPosition.Count; i++)
+            for (int i = 0; i < GameSettings.Instance.CustomBoardPosition.Count; i++)
             {
-                CheckerData checkerData = GameSettings.CustomBoardPosition[i];
+                CheckerData checkerData = GameSettings.Instance.CustomBoardPosition[i];
 
                 Checker checker = Instantiate<Checker>(_checkerObj, _spawnPosition, Quaternion.identity);
                 checker.Set(checkerData.Opponent == OpponentType.Player ? _playerColor : _aiColor, checkerData.X, checkerData.Y, checkerData.Type, checkerData.Opponent);
@@ -61,7 +61,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                 MoveChecker(checker, checkerData.X, checkerData.Y);                
             }
 
-            CurrentPosition = new BoardPosition(_checkers.Select(c => c.Data).ToList(), GameSettings.BoardWidth, GameSettings.BoardHeight);
+            CurrentPosition = new BoardPosition(_checkers.Select(c => c.Data).ToList(), GameSettings.Instance.BoardWidth, GameSettings.Instance.BoardHeight);
         }
 
         private void SetCheckers()
@@ -70,13 +70,13 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
             _checkers = new List<Checker>();
 
-            for (int y = 0; y < GameSettings.BoardHeight; y++)
+            for (int y = 0; y < GameSettings.Instance.BoardHeight; y++)
             {
-                for (int x = 0; x < GameSettings.BoardWidth; x++)
+                for (int x = 0; x < GameSettings.Instance.BoardWidth; x++)
                 {
-                    if (count == GameSettings.OpponentCountOfChechers)
+                    if (count == GameSettings.Instance.OpponentCountOfChechers)
                     {
-                        CurrentPosition = new BoardPosition(_checkers.Select(c => c.Data).ToList(), GameSettings.BoardWidth, GameSettings.BoardHeight);
+                        CurrentPosition = new BoardPosition(_checkers.Select(c => c.Data).ToList(), GameSettings.Instance.BoardWidth, GameSettings.Instance.BoardHeight);
                         for (int i = 0; i < _checkers.Count; i++)
                         {
                             MoveChecker(_checkers[i], _checkers[i].Data.X, _checkers[i].Data.Y);
@@ -93,7 +93,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                     _checkers.Add(checker);
 
                     checker = Instantiate<Checker>(_checkerObj, _spawnPosition, Quaternion.identity);
-                    checker.Set(_aiColor, GameSettings.BoardWidth - 1 - x, GameSettings.BoardHeight - 1 - y, CheckerType.USUAL, OpponentType.AI);
+                    checker.Set(_aiColor, GameSettings.Instance.BoardWidth - 1 - x, GameSettings.Instance.BoardHeight - 1 - y, CheckerType.USUAL, OpponentType.AI);
                     _checkers.Add(checker);
                 }
             }

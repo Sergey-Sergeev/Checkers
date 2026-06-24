@@ -1,8 +1,9 @@
-using NUnit.Framework;
 using Assets.scripts.Core;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Tests.EditMode.Core
 {
@@ -22,7 +23,7 @@ namespace Tests.EditMode.Core
         }
 
         [TearDown]
-        public async Task Teardown()
+        public async void Teardown()
         {
             try
             {
@@ -135,11 +136,11 @@ namespace Tests.EditMode.Core
             var giveawayResult = await _minimaxGiveaway.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(normalResult.move.HasValue, "Обычный режим должен найти ход");
-            Assert.IsTrue(giveawayResult.move.HasValue, "Режим поддавков должен найти ход");
+            Assert.IsTrue(normalResult.HasValue, "Обычный режим должен найти ход");
+            Assert.IsTrue(giveawayResult.HasValue, "Режим поддавков должен найти ход");
 
-            var normalMove = normalResult.move.Value;
-            var giveawayMove = giveawayResult.move.Value;
+            var normalMove = normalResult.Value;
+            var giveawayMove = giveawayResult.Value;
 
             Assert.IsTrue(board.IsCheckerCanMoveAt(board.Data[normalMove.From.x, normalMove.From.y], normalMove.To),
                 "Ход в обычном режиме должен быть валидным");
@@ -187,11 +188,11 @@ namespace Tests.EditMode.Core
             var giveawayResult = await _minimaxGiveaway.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(giveawayResult.move.HasValue, "Режим поддавков должен найти ход");
+            Assert.IsTrue(giveawayResult.HasValue, "Режим поддавков должен найти ход");
 
-            bool giveawayIsBeat = giveawayResult.move.Value.IsBeatOpponentChecker;
+            bool giveawayIsBeat = giveawayResult.Value.IsBeatOpponentChecker;
 
-            Assert.IsTrue(giveawayResult.move.Value.To == new UnityEngine.Vector2Int(4, 4), "лучший ход это 4 4");
+            Assert.IsTrue(giveawayResult.Value.To == new UnityEngine.Vector2Int(4, 4), "лучший ход это 4 4");
         }
 
         [Test]
@@ -209,8 +210,8 @@ namespace Tests.EditMode.Core
             var result = await _minimaxGiveaway.GetBestMove(board, OpponentType.AI);
 
             // Assert
-            Assert.IsTrue(result.move.HasValue, "В поддавках должен быть найден ход, даже если нет взятий");
-            Assert.IsFalse(result.move.Value.IsBeatOpponentChecker, "Ход не должен быть взятием (нет шашек для взятия)");
+            Assert.IsTrue(result.HasValue, "В поддавках должен быть найден ход, даже если нет взятий");
+            Assert.IsFalse(result.Value.IsBeatOpponentChecker, "Ход не должен быть взятием (нет шашек для взятия)");
         }
 
         [Test]

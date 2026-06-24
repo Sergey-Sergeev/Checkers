@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
 namespace Tests.PlayMode
-{   
+{
     [TestFixture]
     public class CheckersAIIntegrationTest
     {
@@ -20,14 +20,13 @@ namespace Tests.PlayMode
         public IEnumerator Setup()
         {
             // Настраиваем игру
-            GameSettings.FirstMoveTurn = OpponentType.Player;
-            GameSettings.BoardWidth = 8;
-            GameSettings.BoardHeight = 8;
-            GameSettings.AISearchDeep = 4;
-            GameSettings.IsGiveaways = false;
-            GameSettings.OpponentCountOfChechers = 12;
-            GameSettings.IsCustomBoard = true;
-            GameSettings.CustomBoardPosition = CreateCustomBoard();
+            GameSettings.Instance.SetFirstMoveTurn(OpponentType.Player);
+            GameSettings.Instance.SetBoardSize(8, 8);
+            GameSettings.Instance.SetAISearchDeep(4);
+            GameSettings.Instance.SetIsGiveaways(false);
+            GameSettings.Instance.SetOpponentCountOfChechers(12);
+            GameSettings.Instance.IsCustomBoard = true;
+            GameSettings.Instance.CustomBoardPosition = CreateCustomBoard();
             yield return null;
         }
 
@@ -39,7 +38,7 @@ namespace Tests.PlayMode
             yield return null;
 
             // Создаем объект AI и добавляем компонент
-            GameSettings.AISearchDeep = 8; // big brain time on
+            GameSettings.Instance.SetAISearchDeep(8); // big brain time on
 
             _aiGameObject = new GameObject("TestAIPlaysAsPlayer");
             _aiComponent = _aiGameObject.AddComponent<CheckersAI>();
@@ -60,14 +59,14 @@ namespace Tests.PlayMode
         [UnityTest]
         public IEnumerator Test_AIPlaysAsPlayer_WithDifferentDepth()
         {
-            GameSettings.IsGiveaways = true;
+            GameSettings.Instance.SetIsGiveaways(true);
 
             // Загружаем сцену
             SceneManager.LoadScene(SceneNames.Game);
             yield return null;
 
             // Создаем объект AI и добавляем компонент
-            GameSettings.AISearchDeep = 8; // big brain time on
+            GameSettings.Instance.SetAISearchDeep(8); // big brain time on
 
             _aiGameObject = new GameObject("TestAIPlaysAsPlayer");
             _aiComponent = _aiGameObject.AddComponent<CheckersAI>();

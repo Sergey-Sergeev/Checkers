@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System;
 
 namespace Assets.scripts.GamePlay.GameSceneScripts
@@ -11,7 +10,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
 		void Start()
 		{
-			float distance = (GameSettings.BoardHeight * CheckersBoard.Instance.CellSize.z) / 2 + BOARD_MARGIN;
+			float distance = (GameSettings.Instance.BoardHeight * CheckersBoard.Instance.CellSize.z) / 2 + BOARD_MARGIN;
 			float angle = CAMERA_LOOK_AT_ANGLE * (MathF.PI / 180f);
 			float z = MathF.Cos(angle) * -distance;
 			float y = MathF.Sin(angle) * distance;

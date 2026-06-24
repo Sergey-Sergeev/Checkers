@@ -1,27 +1,29 @@
 ﻿using Assets.scripts.Core;
 using System.Collections;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets.scripts.GamePlay.GameSceneScripts
 {
     public class CheckersAI : MonoBehaviour
     {
-        public MinimaxCore Minimax { get; private set;  }
+        public MinimaxCore Minimax { get; private set; }
         public bool IsCalculating { get; private set; }
         public OpponentType AIOpponent { get; set; } = OpponentType.AI;
 
-        private bool _isBlocked = false;    
+        private bool _isBlocked = false;
+
+        public static bool IsStoppingOrReseting { get; private set; }
 
         private void Awake()
         {
+            IsStoppingOrReseting = false;
             IsCalculating = false;
             _isBlocked = false;
             Minimax = new MinimaxCore(
-                GameSettings.BoardHeight,
-                GameSettings.BoardWidth,
-                GameSettings.AISearchDeep,
-                GameSettings.IsGiveaways);
+                GameSettings.Instance.BoardHeight,
+                GameSettings.Instance.BoardWidth,
+                GameSettings.Instance.AISearchDeep,
+                GameSettings.Instance.IsGiveaways);
         }
 
         void Update()
@@ -37,30 +39,37 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             StartCoroutine(ProcessAIMove());
         }
 
-        public async Task RestartCalculating()
+        public async Awaitable RestartCalculating()
         {
+            IsStoppingOrReseting = true;
             await Minimax.RestartCalculating();
+            IsStoppingOrReseting = false;
         }
 
-        public async Task StopCalculating()
+        public async Awaitable StopCalculating()
         {
+            IsStoppingOrReseting = true;
             await Minimax.StopCalculating();
+            IsStoppingOrReseting = false;
         }
 
         private IEnumerator ProcessAIMove()
         {
-            var task = Task.Run(async () =>
-            {
-                (float points, CheckerMove? move) = await Minimax.GetBestMove(BoardEntities.Instance.CurrentPosition.Clone(), AIOpponent);
-                return move;
-            });
+            bool isCompleted = false;
+            CheckerMove? move = null;
 
-            while (!task.IsCompleted)
+            var _ = ProcessAwaitable();
+
+            async Awaitable ProcessAwaitable()
+            {
+                move = await Minimax.GetBestMove(BoardEntities.Instance.CurrentPosition.Clone(), AIOpponent);
+                isCompleted = true;
+            }
+
+            while (!isCompleted)
             {
                 yield return null;
             }
-
-            var move = task.Result;
 
             while (
                 !_isBlocked && move != null &&

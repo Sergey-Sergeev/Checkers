@@ -23,7 +23,7 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
 
         void Start()
         {
-            GameSettings.ReadSettingsFromFile();
+            GameSettings.Instance.LoadData();
 
             SetCurrentGameSettingsValues();
             _menuButton.onClick.AddListener(SaveAndBackToMenu);
@@ -71,45 +71,24 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
                 new OptionData(Game.AI_STR)
             });
 
-            _firstMoveTurnDropdown.value = GameSettings.FirstMoveTurn == OpponentType.Player ? 0 : 1;
+            _firstMoveTurnDropdown.value = GameSettings.Instance.FirstMoveTurn == OpponentType.Player ? 0 : 1;
 
-            _boardHeightInputField.text = GameSettings.BoardHeight.ToString();
-            _boardWidthInputField.text = GameSettings.BoardWidth.ToString();
-            _aiSearchDeepInputField.text = GameSettings.AISearchDeep.ToString();
-            _countOfCheckersPerOpponentInputField.text = GameSettings.OpponentCountOfChechers.ToString();
+            _boardHeightInputField.text = GameSettings.Instance.BoardHeight.ToString();
+            _boardWidthInputField.text = GameSettings.Instance.BoardWidth.ToString();
+            _aiSearchDeepInputField.text = GameSettings.Instance.AISearchDeep.ToString();
+            _countOfCheckersPerOpponentInputField.text = GameSettings.Instance.OpponentCountOfChechers.ToString();
 
-            _isGiveawaysToggle.isOn = GameSettings.IsGiveaways;
+            _isGiveawaysToggle.isOn = GameSettings.Instance.IsGiveaways;
         }
 
 
         private void SaveAndBackToMenu()
         {
-            GameSettings.FirstMoveTurn = _firstMoveTurnDropdown.value == 0 ? OpponentType.Player : OpponentType.AI;
-            GameSettings.BoardHeight = int.Parse(_boardHeightInputField.text);
-            GameSettings.BoardWidth = int.Parse(_boardWidthInputField.text);
-            GameSettings.AISearchDeep = int.Parse(_aiSearchDeepInputField.text);
-            GameSettings.IsGiveaways = _isGiveawaysToggle.isOn;
-
-            int opponentCountOfChechers = int.Parse(_countOfCheckersPerOpponentInputField.text);
-
-            int maxForCurrentBoard = 0;
-
-            if (GameSettings.BoardWidth % 2 == 0)
-            {
-                if (GameSettings.BoardHeight % 2 == 0)
-                    maxForCurrentBoard = (GameSettings.BoardWidth / 2) * (GameSettings.BoardHeight / 2 - 1);
-                else maxForCurrentBoard = (GameSettings.BoardWidth / 2) * (GameSettings.BoardHeight / 2);
-            }
-            else
-            {
-                if (GameSettings.BoardHeight % 2 == 0)
-                    maxForCurrentBoard = (GameSettings.BoardWidth / 2) * (GameSettings.BoardHeight / 2 - 1);
-                else maxForCurrentBoard = (GameSettings.BoardWidth / 2 + 1) * (GameSettings.BoardHeight / 2)  - 1;
-            }
-
-            GameSettings.OpponentCountOfChechers = opponentCountOfChechers > maxForCurrentBoard ? maxForCurrentBoard : opponentCountOfChechers;
-
-            GameSettings.SaveGameSettingsToFile();
+            GameSettings.Instance.SetFirstMoveTurn(_firstMoveTurnDropdown.value == 0 ? OpponentType.Player : OpponentType.AI);
+            GameSettings.Instance.SetBoardSize(int.Parse(_boardHeightInputField.text), int.Parse(_boardWidthInputField.text));
+            GameSettings.Instance.SetAISearchDeep(int.Parse(_aiSearchDeepInputField.text));
+            GameSettings.Instance.SetIsGiveaways(_isGiveawaysToggle.isOn);          
+            GameSettings.Instance.SetOpponentCountOfChechers(int.Parse(_countOfCheckersPerOpponentInputField.text));
 
             _menuTabObj.SetActive(true);
             gameObject.SetActive(false);
