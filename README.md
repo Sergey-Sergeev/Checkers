@@ -71,7 +71,6 @@
 │   │   │   ├── GameSettings.cs                     # Настройки игры (сохраняются в JSON)
 │   │   │   ├── GameStatistic.cs                    # Статистика игр (сохраняется в JSON)
 │   │   │   └── SceneNames.cs                       # Константы имён сцен
-│   │   └── Core.meta                               # Мета-файл для папки Core
 │   ├── Settings/                                   # Настройки проекта Unity
 │   ├── Sprites/                                    # 2D-спрайты
 │   │   └── PositionAssessmentForegroundSprite.png 	# Фоновый спрайт для вкладки оценки позиции
@@ -84,11 +83,9 @@
 │   │   │   │   ├── MinimaxCoreGiveawayTests.cs     # Тесты минимакса (режим поддавки)
 │   │   │   │   └── MinimaxCoreTests.cs      	    # Основные тесты минимакса
 │   │   │   ├── EditMode.asmdef                     # Сборка для EditMode тестов
-│   │   │   └── EditMode.meta                       # Мета-файл для папки EditMode
 │   │   └── PlayMode/                               # Интеграционные тесты (PlayMode)
 │   │       ├── IntegrationTests.cs                 # Интеграционные тесты (ИИ против ИИ)
 │   │       ├── PlayMode.asmdef                     # Сборка для PlayMode тестов
-│   │       └── PlayMode.meta                       # Мета-файл для папки PlayMode
 │   ├── TextMesh Pro/                               # Ресурсы TextMesh Pro (текстовый UI)
 │   └── InputSystem_Actions.inputactions            # Настройки Input System
 ├── Build/                                          # готовый, собранный проект 
