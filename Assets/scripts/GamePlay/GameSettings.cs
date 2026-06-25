@@ -41,7 +41,14 @@ namespace Assets.scripts.GamePlay
         public Color CheckerColor2 = Color.black;
 
         public bool IsCustomBoard = false;
-        public List<CheckerData> CustomBoardPosition = new List<CheckerData>() { };
+        public List<CheckerData> CustomBoardPosition = new List<CheckerData>() {
+            new CheckerData(0,6, CheckerType.USUAL, OpponentType.Player, 8, 8),
+            new CheckerData(1,5, CheckerType.USUAL, OpponentType.Player, 8, 8),
+            new CheckerData(3,3, CheckerType.USUAL, OpponentType.Player, 8, 8),
+            new CheckerData(5,3, CheckerType.USUAL, OpponentType.Player, 8, 8),
+            new CheckerData(0,4, CheckerType.USUAL, OpponentType.AI, 8, 8),
+            new CheckerData(7,5, CheckerType.KING, OpponentType.AI, 8, 8),
+        };
 
         private SettingsData _data;
         private static GameSettings _instance;
@@ -107,7 +114,7 @@ namespace Assets.scripts.GamePlay
                         maxForCurrentBoard = (BoardWidth / 2) * (BoardHeight / 2 - 1);
                     else maxForCurrentBoard = (BoardWidth / 2 + 1) * (BoardHeight / 2) - 1;
                 }
-                
+
                 _data.opponentCountOfChechers = value > maxForCurrentBoard ? maxForCurrentBoard : value;
                 SaveData();
             }

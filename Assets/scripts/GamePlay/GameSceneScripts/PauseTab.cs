@@ -35,7 +35,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         private void MenuButton_onClickAsync()
         {
-            _ = _checkersAI.StopCalculating();
+            _checkersAI.StopCalculating();
             SceneManager.LoadScene(SceneNames.Menu);
         }
 
@@ -53,11 +53,16 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
             lines.Add($"N\t|_{opponent1}_| |_{opponent2}_|");
 
-            for (int i = 0; i < BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings.Count - 1; i += 2)
+            int movesCount = BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings.Count;
+
+            for (int i = 0; i < movesCount / 2; i++)
             {
-                lines.Add($"{((i + 1) / 2)}:\t[{BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings[i]}] - " +
-                    $"[{BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings[i + 1]}]");
+                lines.Add($"{i + 1}:\t[{BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings[i * 2]}] - " +
+                    $"[{BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings[i * 2 + 1]}]");
             }
+
+            if (movesCount % 2 == 1)
+                lines.Add($"{(movesCount / 2 + 1)}:\t[{BoardEntities.Instance.MovesHistory.CheckerMovesAsStrings[movesCount - 1]}]");
 
             if (Game.EndOfGame != EndOfGameType.None)
                 lines.Add(_title.text);
@@ -107,7 +112,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         private void ExitButton_onClick()
         {
-            _ = _checkersAI.StopCalculating();
+            _checkersAI.StopCalculating();
 
 #if UNITY_WEBGL && !UNITY_EDITOR // --
             Application.ExternalEval("window.close();");
@@ -124,7 +129,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                 RestoreButtonText();
             }
 
-            _ = _checkersAI.RestartCalculating();
+            _checkersAI.RestartCalculating();
             Game.UnPause();
         }
 

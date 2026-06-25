@@ -24,8 +24,6 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         private static Color _aiColor;
         private static Color _playerColor;
 
-
-        private bool _isNeedContinueBeatCheckers = false;
         private List<CheckerData> _beatenCheckersInRow = new List<CheckerData>();
         private List<Checker> _checkers;
         private int _movingCheckersCount = 0;
@@ -105,7 +103,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                 return true;
 
             if (Game.CurrentMoveTurn != opponent ||
-                _isNeedContinueBeatCheckers ||
+                CurrentPosition.IsOpponentContinueBeating ||
                 checkerData == null ||
                 checkerData.Opponent != opponent ||
                 !CurrentPosition.IsCheckerExist(checkerData)) return false;
@@ -131,8 +129,8 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             CheckersBoard.Instance.UnHighlightCells();
             MoveChecker(Selected, move.x, move.y);
 
-            CheckerData updatedState = CurrentPosition.MakeMove(new Vector2Int(Selected.Data.X, Selected.Data.Y), move, out _isNeedContinueBeatCheckers, out CheckerData beatenCheckerData, out bool isCheckerTransformd);
-            MovesHistory.Add(Selected.Data, move, beatenCheckerData != null, _isNeedContinueBeatCheckers, isCheckerTransformd);
+            CheckerData updatedState = CurrentPosition.MakeMove(new Vector2Int(Selected.Data.X, Selected.Data.Y), move, out CheckerData beatenCheckerData, out bool isCheckerTransformd);
+            MovesHistory.Add(Selected.Data, move, beatenCheckerData != null, CurrentPosition.IsOpponentContinueBeating, isCheckerTransformd);
 
             Selected.Data = updatedState;
 
@@ -142,7 +140,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             if (beatenCheckerData != null)
                 _beatenCheckersInRow.Add(beatenCheckerData);
 
-            if (_isNeedContinueBeatCheckers)
+            if (CurrentPosition.IsOpponentContinueBeating)
             {
                 SelectChecker(Selected.Data);
             }

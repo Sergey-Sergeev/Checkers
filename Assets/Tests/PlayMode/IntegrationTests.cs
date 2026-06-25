@@ -31,7 +31,7 @@ namespace Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator Test_AIPlaysAsPlayer_OnLoadedScene()
+        public IEnumerator Test_AIPlaysAsPlayer_OnLoadedScene_Deep_8_vs_Deep_4()
         {
             // Загружаем сцену
             SceneManager.LoadScene(SceneNames.Game);
@@ -57,7 +57,7 @@ namespace Tests.PlayMode
         }
 
         [UnityTest]
-        public IEnumerator Test_AIPlaysAsPlayer_WithDifferentDepth()
+        public IEnumerator Test_AIPlaysAsPlayer_OnLoadedScene_Deep_8_vs_Deep_4_Giveaways()
         {
             GameSettings.Instance.SetIsGiveaways(true);
 

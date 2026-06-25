@@ -11,6 +11,9 @@ namespace Assets.scripts.Core
         public int PlayerCheckerCount { get; private set; }
         public int AICheckerCount { get; private set; }
 
+        public bool IsOpponentContinueBeating { get; private set; }
+
+        private CheckerData _continueBeatingChecker;
         private int _boardWidth;
         private int _boardHeight;
 
@@ -45,6 +48,8 @@ namespace Assets.scripts.Core
             clone.AICheckerCount = AICheckerCount;    
             clone._boardHeight = _boardHeight;
             clone._boardWidth = _boardWidth;
+            clone.IsOpponentContinueBeating = IsOpponentContinueBeating;
+            clone._continueBeatingChecker = _continueBeatingChecker;
             return clone;
         }
 
@@ -85,7 +90,7 @@ namespace Assets.scripts.Core
 
 
         /// <returns>updated checkerData</returns>
-        public CheckerData MakeMove(Vector2Int checkerPos, Vector2Int move, out bool isOpponentContinueBeating, out CheckerData beatenChecker, out bool isCheckerTransformd)
+        public CheckerData MakeMove(Vector2Int checkerPos, Vector2Int move, out CheckerData beatenChecker, out bool isCheckerTransformd)
         {
             if (!IsCheckerCanMoveAt(Data[checkerPos.x, checkerPos.y], move))
             {
@@ -97,7 +102,12 @@ namespace Assets.scripts.Core
 
             bool isNextMoveContinueBeating = Data[move.x, move.y].IsCheckerNeedBeat(this);
             isCheckerTransformd = Data[move.x, move.y].Type != lastType;
-            isOpponentContinueBeating = isNextMoveContinueBeating && beatenChecker != null;
+
+            IsOpponentContinueBeating = isNextMoveContinueBeating && beatenChecker != null;
+
+            if (IsOpponentContinueBeating)
+                _continueBeatingChecker = Data[move.x, move.y];
+
             return Data[move.x, move.y];
         }
 
@@ -135,6 +145,9 @@ namespace Assets.scripts.Core
 
         public List<CheckerMove> GetAllPossibleMoves(OpponentType opponent)
         {
+            if (IsOpponentContinueBeating)
+                return new List<CheckerMove>(_continueBeatingChecker.GetAllMovesForChecker(this));
+
             List<CheckerMove> allMoves = new List<CheckerMove>();
 
             bool isOpponentNeedBeat = false;

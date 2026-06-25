@@ -10,15 +10,9 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
         public bool IsCalculating { get; private set; }
         public OpponentType AIOpponent { get; set; } = OpponentType.AI;
 
-        private bool _isBlocked = false;
-
-        public static bool IsStoppingOrReseting { get; private set; }
-
         private void Awake()
         {
-            IsStoppingOrReseting = false;
             IsCalculating = false;
-            _isBlocked = false;
             Minimax = new MinimaxCore(
                 GameSettings.Instance.BoardHeight,
                 GameSettings.Instance.BoardWidth,
@@ -28,8 +22,7 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         void Update()
         {
-            if (_isBlocked ||
-                IsCalculating ||
+            if (IsCalculating ||
                 Game.IsPaused ||
                 Game.CurrentMoveTurn != AIOpponent ||
                 Game.EndOfGame != EndOfGameType.None ||
@@ -39,18 +32,14 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
             StartCoroutine(ProcessAIMove());
         }
 
-        public async Awaitable RestartCalculating()
+        public void RestartCalculating()
         {
-            IsStoppingOrReseting = true;
-            await Minimax.RestartCalculating();
-            IsStoppingOrReseting = false;
+            Minimax.RestartCalculating();
         }
 
-        public async Awaitable StopCalculating()
+        public void StopCalculating()
         {
-            IsStoppingOrReseting = true;
-            await Minimax.StopCalculating();
-            IsStoppingOrReseting = false;
+            Minimax.StopCalculating();
         }
 
         private IEnumerator ProcessAIMove()
@@ -71,13 +60,22 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
                 yield return null;
             }
 
-            while (
-                !_isBlocked && move != null &&
-                (!BoardEntities.Instance.TrySelectChecker(BoardEntities.Instance.CurrentPosition.Data[move.Value.From.x, move.Value.From.y], AIOpponent) ||
-                !BoardEntities.Instance.TryMakeMoveSelectedChecker(new Vector2Int(move.Value.To.x, move.Value.To.y), AIOpponent))
-                )
+
+            if (move.HasValue &&
+                BoardEntities.Instance.CurrentPosition.IsCheckerExist(BoardEntities.Instance.CurrentPosition.Data[move.Value.From.x, move.Value.From.y]) &&
+                BoardEntities.Instance.CurrentPosition.IsCheckerCanMoveAt(BoardEntities.Instance.CurrentPosition.Data[move.Value.From.x, move.Value.From.y],
+                move.Value.To))
             {
-                yield return null;
+                while (!BoardEntities.Instance.TrySelectChecker(BoardEntities.Instance.CurrentPosition.Data[move.Value.From.x, move.Value.From.y], AIOpponent) ||
+                    !BoardEntities.Instance.TryMakeMoveSelectedChecker(new Vector2Int(move.Value.To.x, move.Value.To.y), AIOpponent))
+                {
+                    if (Game.IsPaused) break;
+                    yield return null;
+                }
+            }
+            else
+            {
+                RestartCalculating();
             }
 
             IsCalculating = false;

@@ -46,31 +46,21 @@ namespace Assets.scripts.Core
                 );
                 return result.move;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Debug.LogError($"GetBestMove error: {e.Message}");
                 return null;
             }
         }
 
 
-        public async Awaitable RestartCalculating()
+        public void RestartCalculating()
         {
-            await StopCalculating();
-            await Awaitable.NextFrameAsync();
-
             _isStopped = false;
-
-            await Awaitable.NextFrameAsync();
         }
 
-        public async Awaitable StopCalculating()
+        public void StopCalculating()
         {
-            if (_isStopped) return;
-
             _isStopped = true;
-
-            await Awaitable.NextFrameAsync();
         }
 
         public float GetPositionAssessment(BoardPosition position)
@@ -174,18 +164,18 @@ namespace Assets.scripts.Core
 
             for (int i = 0; i < moves.Count; i++)
             {
-                if (_isStopped) return (0, null);
-
                 BoardPosition nextPosition = pos.Clone();
-                nextPosition.MakeMove(moves[i].From, moves[i].To, out bool isOpponentContinueBeating, out CheckerData beatenChecker, out _);
+                nextPosition.MakeMove(moves[i].From, moves[i].To, out CheckerData beatenChecker, out _);
                 CheckerMove lastMove = new CheckerMove(moves[i].From, moves[i].To, moves[i].CheckerOpponent, beatenChecker != null);
 
                 (float points, CheckerMove? _) = await EvaluateTree(
                     nextPosition,
-                    isOpponentContinueBeating ? isMax : !isMax,
+                    nextPosition.IsOpponentContinueBeating ? isMax : !isMax,
                     alpha, beta,
                     curDeep + 1
                 );
+
+                if (_isStopped) return (0, null);
 
                 if (isMax)
                 {

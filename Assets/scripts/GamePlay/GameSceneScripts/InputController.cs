@@ -22,8 +22,6 @@ namespace Assets.scripts.GamePlay.GameSceneScripts
 
         void Update()
         {
-            if (CheckersAI.IsStoppingOrReseting) return;
-
             if (Keyboard.current != null)
             {
                 foreach (var k in KEYBOARD_INPUTS)

@@ -116,7 +116,7 @@ namespace Tests.EditMode.Shared
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
             // Act
-            var updatedChecker = board.MakeMove(from, to, out bool continueBeating, out CheckerData beaten, out bool transformed);
+            var updatedChecker = board.MakeMove(from, to, out CheckerData beaten, out bool transformed);
 
             // Assert
             Assert.IsNull(board.Data[from.x, from.y], $"Старая позиция ({from.x}, {from.y}) должна быть пустой");
@@ -141,7 +141,7 @@ namespace Tests.EditMode.Shared
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
             // Act
-            var updatedChecker = board.MakeMove(from, to, out bool continueBeating, out CheckerData beaten, out bool transformed);
+            var updatedChecker = board.MakeMove(from, to, out CheckerData beaten, out bool transformed);
 
             // Assert
             Assert.IsNull(board.Data[from.x, from.y], $"Старая позиция ({from.x}, {from.y}) должна быть пустой");
@@ -166,7 +166,7 @@ namespace Tests.EditMode.Shared
             var to = new Vector2Int(6, 0); // Последний ряд для AI
 
             // Act
-            var updatedChecker = board.MakeMove(from, to, out bool continueBeating, out CheckerData beaten, out bool transformed);
+            var updatedChecker = board.MakeMove(from, to, out CheckerData beaten, out bool transformed);
 
             // Assert
             Assert.IsTrue(transformed, "Шашка должна превратиться в дамку");
@@ -189,7 +189,7 @@ namespace Tests.EditMode.Shared
             // Act & Assert
             var ex = Assert.Throws<System.Exception>(() =>
             {
-                board.MakeMove(from, to, out _, out _, out _);
+                board.MakeMove(from, to, out _, out _);
             }, "Должно быть выброшено исключение при невалидном ходе");
         }
 

@@ -28,11 +28,11 @@ namespace Tests.EditMode.Core
         }
 
         [TearDown]
-        public async void Teardown()
+        public void Teardown()
         {
             try
             {
-                await _minimax.StopCalculating();
+                _minimax.StopCalculating();
             }
             catch (Exception ex)
             {
@@ -290,7 +290,7 @@ namespace Tests.EditMode.Core
             var move = result.Value;
 
             // Применяем ход и проверяем превращение
-            board.MakeMove(move.From, move.To, out _, out _, out bool transformed);
+            board.MakeMove(move.From, move.To, out _, out bool transformed);
             Assert.IsTrue(transformed || board.Data[move.To.x, move.To.y].Type == CheckerType.KING,
                 "Если ход ведёт на последний ряд, шашка должна стать дамкой");
         }
@@ -393,7 +393,7 @@ namespace Tests.EditMode.Core
             var move = result.Value;
             Assert.IsTrue(board.IsCheckerCanMoveAt(board.Data[move.From.x, move.From.y], move.To), "Выбранный ход должен быть валидным");
 
-            board.MakeMove(move.From, move.To, out _, out _, out _);
+            board.MakeMove(move.From, move.To, out _, out _);
 
 
             // делаем второй ход

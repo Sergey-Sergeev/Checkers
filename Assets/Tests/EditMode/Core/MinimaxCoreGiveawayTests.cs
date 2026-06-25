@@ -23,11 +23,11 @@ namespace Tests.EditMode.Core
         }
 
         [TearDown]
-        public async void Teardown()
+        public void Teardown()
         {
             try
             {
-                await _minimaxNormal.StopCalculating();
+                _minimaxNormal.StopCalculating();
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace Tests.EditMode.Core
 
             try
             {
-                await _minimaxGiveaway.StopCalculating();
+                _minimaxGiveaway.StopCalculating();
             }
             catch (Exception ex)
             {
@@ -149,11 +149,11 @@ namespace Tests.EditMode.Core
 
             // Оцениваем позиции после ходов в обычном режиме
             var boardAfterNormal = board.Clone();
-            boardAfterNormal.MakeMove(normalMove.From, normalMove.To, out _, out _, out _);
+            boardAfterNormal.MakeMove(normalMove.From, normalMove.To, out _, out _);
             float normalScoreAfter = _minimaxNormal.GetPositionAssessment(boardAfterNormal);
 
             var boardAfterGiveaway = board.Clone();
-            boardAfterGiveaway.MakeMove(giveawayMove.From, giveawayMove.To, out _, out _, out _);
+            boardAfterGiveaway.MakeMove(giveawayMove.From, giveawayMove.To,  out _, out _);
             float giveawayScoreAfter = _minimaxNormal.GetPositionAssessment(boardAfterGiveaway);
 
             TestContext.WriteLine($"Normal move: {normalMove.From} -> {normalMove.To}, score: {normalScoreAfter:F3}");
