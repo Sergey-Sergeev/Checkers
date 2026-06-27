@@ -17,6 +17,11 @@ namespace Assets.scripts.GamePlay
 
     public class GameSettings : FileStorage<SettingsData>
     {
+        public const string AI_WIN_PAUSE_TITLE = "AI - win";
+        public const string PLAYER_WIN_PAUSE_TITLE = "Player - win";
+        public const string DRAW_PAUSE_TITLE = "Draw";
+        public const string PLAYER_STR = "Player";
+        public const string AI_STR = "AI";
         public const int BOARD_MAX_HEIGHT = 10;
         public const int BOARD_MAX_WIDTH = 10;
         public const int BOARD_MIN_HEIGHT = 4;
@@ -24,7 +29,7 @@ namespace Assets.scripts.GamePlay
         public const int AI_MAX_SEARCH_DEEP = 11;
         public const int AI_MIN_SEARCH_DEEP = 1;
         public const int MAX_COUNT_OF_CHECKERS_FOR_OPPONENT = 20;
-        public const int MIN_COUNT_OF_CHECKERS_FOR_OPPONENT = 4;
+        public const int MIN_COUNT_OF_CHECKERS_FOR_OPPONENT = 1;
 
         public int OpponentCountOfChechers => _data.opponentCountOfChechers;
         public OpponentType FirstMoveTurn => _data.firstMoveTurn;
@@ -100,8 +105,15 @@ namespace Assets.scripts.GamePlay
         {
             if (_data != null && value >= MIN_COUNT_OF_CHECKERS_FOR_OPPONENT && value <= MAX_COUNT_OF_CHECKERS_FOR_OPPONENT)
             {
-                int maxForCurrentBoard = 0;
+                int count = 0;
+                for (int i = 0; i < BoardWidth; i++)
+                    for (int j = 0; j < BoardHeight; j++)
+                        if ((i + j) % 2 == 0)
+                            count++;
 
+                int maxForCurrentBoard = count - 1;
+
+                /*
                 if (BoardWidth % 2 == 0)
                 {
                     if (BoardHeight % 2 == 0)
@@ -113,9 +125,9 @@ namespace Assets.scripts.GamePlay
                     if (BoardHeight % 2 == 0)
                         maxForCurrentBoard = (BoardWidth / 2) * (BoardHeight / 2 - 1);
                     else maxForCurrentBoard = (BoardWidth / 2 + 1) * (BoardHeight / 2) - 1;
-                }
+                }*/
 
-                _data.opponentCountOfChechers = value > maxForCurrentBoard ? maxForCurrentBoard : value;
+                _data.opponentCountOfChechers = 2 * value > maxForCurrentBoard ? maxForCurrentBoard / 2 : value;
                 SaveData();
             }
         }

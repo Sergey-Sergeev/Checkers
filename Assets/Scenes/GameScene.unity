@@ -788,7 +788,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 592118930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bc7486c1d3fb2448975ecac58a0dd16, type: 3}
+  m_Script: {fileID: 11500000, guid: 7411e48e56174aa428d962384203c8de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Assets.BoardEntities
   _spawnPosition: {x: 0, y: 0.1, z: 0}
@@ -1604,7 +1604,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1405355348}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a217be6945bd95548b74fef343bedf40, type: 3}
+  m_Script: {fileID: 11500000, guid: 62acf1f9a203639449f50ab96d1dad78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Assets.Game
 --- !u!1 &1486971232

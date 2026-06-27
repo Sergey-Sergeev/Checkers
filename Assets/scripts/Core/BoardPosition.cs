@@ -45,7 +45,7 @@ namespace Assets.scripts.Core
             BoardPosition clone = new BoardPosition();
             clone.Data = (CheckerData?[,])Data.Clone();
             clone.PlayerCheckerCount = PlayerCheckerCount;
-            clone.AICheckerCount = AICheckerCount;    
+            clone.AICheckerCount = AICheckerCount;
             clone._boardHeight = _boardHeight;
             clone._boardWidth = _boardWidth;
             clone.IsOpponentContinueBeating = IsOpponentContinueBeating;

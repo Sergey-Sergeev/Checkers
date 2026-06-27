@@ -79,11 +79,8 @@ namespace Tests.EditMode.Shared
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
-            // Act
-            bool needBeat = board.IsOpponentNeedBeatChecker(OpponentType.AI);
-
             // Assert
-            Assert.IsTrue(needBeat, "AI должен видеть возможность взятия");
+            Assert.IsTrue(board.IsOpponentNeedBeatChecker(OpponentType.AI), "AI должен видеть возможность взятия");
         }
 
         [Test]
@@ -96,11 +93,8 @@ namespace Tests.EditMode.Shared
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
-            // Act
-            bool needBeat = board.IsOpponentNeedBeatChecker(OpponentType.AI);
-
             // Assert
-            Assert.IsFalse(needBeat, "Без шашек противника нечего бить");
+            Assert.IsFalse(board.IsOpponentNeedBeatChecker(OpponentType.AI), "Без шашек противника нечего бить");
         }
 
         [Test]

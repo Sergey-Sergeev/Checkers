@@ -1,6 +1,7 @@
 using Assets.scripts.Core;
 using Assets.scripts.GamePlay;
 using Assets.scripts.GamePlay.GameSceneScripts;
+using Assets.scripts.GamePlay.GameSceneScripts.GameLogicLayer;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,13 +48,13 @@ namespace Tests.PlayMode
             yield return null;
 
             // Act - Ждем
-            while (Game.EndOfGame == EndOfGameType.None)
+            while (GameState.EndOfGame == EndOfGameType.None)
             {
                 yield return new WaitForSeconds(0.3f);
             }
 
             // Assert
-            Assert.IsTrue(Game.EndOfGame == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
+            Assert.IsTrue(GameState.EndOfGame == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
         }
 
         [UnityTest]
@@ -75,13 +76,13 @@ namespace Tests.PlayMode
             yield return null;
 
             // Act - Ждем
-            while (Game.EndOfGame == EndOfGameType.None)
+            while (GameState.EndOfGame == EndOfGameType.None)
             {
                 yield return new WaitForSeconds(0.3f);
             }
 
             // Assert
-            Assert.IsTrue(Game.EndOfGame == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
+            Assert.IsTrue(GameState.EndOfGame == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
         }
 
         private List<CheckerData> CreateCustomBoard()

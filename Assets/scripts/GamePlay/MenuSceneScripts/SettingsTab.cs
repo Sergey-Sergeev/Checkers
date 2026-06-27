@@ -1,5 +1,4 @@
-﻿using Assets.scripts.GamePlay.GameSceneScripts;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -67,8 +66,8 @@ namespace Assets.scripts.GamePlay.MenuSceneScripts
         {
             _firstMoveTurnDropdown.ClearOptions();
             _firstMoveTurnDropdown.AddOptions(new List<OptionData>() {
-                new OptionData(Game.PLAYER_STR),
-                new OptionData(Game.AI_STR)
+                new OptionData(GameSettings.PLAYER_STR),
+                new OptionData(GameSettings.AI_STR)
             });
 
             _firstMoveTurnDropdown.value = GameSettings.Instance.FirstMoveTurn == OpponentType.Player ? 0 : 1;

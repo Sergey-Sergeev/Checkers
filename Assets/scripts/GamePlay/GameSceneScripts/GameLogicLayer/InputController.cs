@@ -1,0 +1,111 @@
+﻿using Assets.scripts.Core;
+using Assets.scripts.GamePlay.GameSceneScripts.PresentationLayer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+
+namespace Assets.scripts.GamePlay.GameSceneScripts.GameLogicLayer
+{
+    public class InputController : MonoBehaviour
+    {
+        private readonly Dictionary<Key, Action> KEYBOARD_INPUTS = new Dictionary<Key, Action>() {
+            { Key.Q, HandlePauseTab },
+            { Key.M, HandleMovesHistoryTab },
+            { Key.A, HandlePositionAssessmentTab }
+        };
+
+        private readonly Dictionary<MouseButton, Action> MOUSE_INPUTS = new Dictionary<MouseButton, Action>() {
+            { MouseButton.Left, HandleClick }
+        };
+
+        void Update()
+        {
+            if (Keyboard.current != null)
+            {
+                foreach (var k in KEYBOARD_INPUTS)
+                {
+                    if (Keyboard.current[k.Key].wasPressedThisFrame)
+                    {
+                        k.Value.Invoke();
+                    }
+                }
+            }
+
+            if (Mouse.current != null)
+            {
+                foreach (var kvp in MOUSE_INPUTS)
+                {
+                    if (IsMouseButtonPressed(kvp.Key))
+                    {
+                        kvp.Value.Invoke();
+                    }
+                }
+            }
+        }
+
+        private bool IsMouseButtonPressed(MouseButton button)
+        {
+            switch (button)
+            {
+                case MouseButton.Left:
+                    return Mouse.current.leftButton.wasPressedThisFrame;
+                case MouseButton.Right:
+                    return Mouse.current.rightButton.wasPressedThisFrame;
+                case MouseButton.Middle:
+                    return Mouse.current.middleButton.wasPressedThisFrame;
+                default:
+                    return false;
+            }
+        }
+
+        private static void HandleClick()
+        {
+            if (GameState.IsPaused) return;
+
+            Vector2 mousePos = Mouse.current.position.ReadValue();
+
+            if (mousePos.x < 0 || mousePos.y < 0 || mousePos.x >= Camera.main.pixelRect.width || mousePos.y >= Camera.main.pixelRect.height)
+                return;
+
+            Ray ray = Camera.main.ScreenPointToRay(mousePos);
+            RaycastHit[] hit = Physics.RaycastAll(ray)
+                                    .OrderBy(h => h.transform.position.y)
+                                    .ToArray();
+
+            for (int i = 0; i < hit.Length; i++)
+            {
+                if (hit[i].transform.gameObject.TryGetComponent<BoardCell>(out BoardCell cell) && cell.IsHighlighted)
+                {
+                    BoardManager.Instance.TryMakeMoveSelectedChecker(new Vector2Int(cell.X, cell.Y), OpponentType.Player);
+                    return;
+                }
+                else if (hit[i].transform.gameObject.TryGetComponent<Checker>(out Checker checker))
+                {
+                    BoardManager.Instance.TrySelectChecker(checker.Data, OpponentType.Player);
+                    return;
+                }
+            }
+        }
+
+        private static void HandlePauseTab()
+        {
+            if (GameState.IsPaused)
+                GameState.UnPause();
+            else GameState.Pause();
+        }
+
+        private static void HandlePositionAssessmentTab()
+        {
+            UITabManager.Instance.SwitchTabState(UITabManager.Tab.PositionAssessment);
+        }
+
+        private static void HandleMovesHistoryTab()
+        {
+            UITabManager.Instance.SwitchTabState(UITabManager.Tab.MovesHistory);
+        }
+
+    }
+}
