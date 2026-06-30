@@ -309,8 +309,13 @@ docker rm checkers-app
 
 ## Зависимости
 
- - Unity ≥ 6000.4.10f1 (рекомендуется версия, указанная в ProjectSettings/ProjectVersion.txt)
- - .NET: API Compatibility Level - .NET Standard 2.1
- - Платформа сборки: WebGL (для Docker) / Windows, macOS, Linux (для редактора)
+### Для запуска
+
  - Docker ≥ 20.10 (для запуска в контейнере)
  - Для локального запуска: Python 3.x
+
+### Для сборки
+
+ - Unity ≥ 6000.4.10f1 (рекомендуется версия, указанная в ProjectSettings/ProjectVersion.txt)
+ - .NET: API Compatibility Level - .NET Standard 2.1
+ - Модуль поддержки WebGL (можно установить через Unity Hub ≥ 3.18.0)
