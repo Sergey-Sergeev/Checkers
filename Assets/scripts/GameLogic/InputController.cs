@@ -22,6 +22,8 @@ namespace Assets.scripts.GameLogic
 
         void Update()
         {
+            if (GameManager.Instance.IsEndOfGame()) return;
+
             if (Keyboard.current != null)
             {
                 foreach (var k in KEYBOARD_INPUTS)
@@ -62,7 +64,7 @@ namespace Assets.scripts.GameLogic
 
         private static void HandleClick()
         {
-            if (GameManager.Instance.IsPaused) return;
+            if (GameManager.Instance.IsPaused || GameManager.Instance.IsEndOfGame()) return;
 
             Vector2 mousePos = Mouse.current.position.ReadValue();
 
