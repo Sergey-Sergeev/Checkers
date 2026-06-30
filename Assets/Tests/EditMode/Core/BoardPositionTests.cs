@@ -1,7 +1,9 @@
-﻿using NUnit.Framework;
+﻿using Assets.scripts.Core;
+using NUnit.Framework;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using UnityEngine;
-using Assets.scripts.Core;
 
 namespace Tests.EditMode.Shared
 {
@@ -9,55 +11,163 @@ namespace Tests.EditMode.Shared
     {
         private const int BOARD_WIDTH = 8;
         private const int BOARD_HEIGHT = 8;
+        
 
         [Test]
-        public void BoardPosition_Clone_CheckerCount_IsPreserved()
+        public void IsOpponentCanMove_OneCheckerInAnyPositionOnBoard_AIAndPlayerChecker()
         {
-            // Arrange
-            var checkers = new List<CheckerData>
+            OpponentType[] opponents = { OpponentType.AI, OpponentType.Player };
+
+            foreach (var opponent in opponents)
             {
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
-            };
-            var original = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    for (int x = 0; x < BOARD_WIDTH; x++)
+                    {
+                        if ((x + y) % 2 == 1) continue;
 
-            // Act
-            var clone = original.Clone();
+                        // Arrange
+                        var checkers = new List<CheckerData>
+                        {
+                            new CheckerData(x, y, CheckerType.Usual, opponent, BOARD_HEIGHT, BOARD_WIDTH)
+                        };
+                        var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
-            // Assert
-            Assert.AreEqual(original.PlayerCheckerCount, clone.PlayerCheckerCount,
-                "Количество шашек игрока должно совпадать");
-            Assert.AreEqual(original.AICheckerCount, clone.AICheckerCount,
-                "Количество шашек AI должно совпадать");
+                        // Act
+                        bool canMove = board.IsOpponentCanMove(opponent);
+
+                        // Assert
+                        Assert.IsTrue(canMove, $"{opponent} must have move. ");
+                    }
+                }
+            }
         }
 
         [Test]
-        public void BoardPosition_IsOpponentCanMove_AIOnBlackCell_HasMoves()
+        public void IsOpponentCanMove_IncreasingCountOfCheckersInAnyPositionOnBoard_AIAndPlayerChecker()
         {
-            // Arrange
-            var checkers = new List<CheckerData>
+            OpponentType[] opponents = { OpponentType.AI, OpponentType.Player };
+
+            foreach (var opponent in opponents)
             {
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
-            };
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+                var checkers = new List<CheckerData>();
 
-            // Act
-            bool canMove = board.IsOpponentCanMove(OpponentType.AI);
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    for (int x = 0; x < BOARD_WIDTH; x++)
+                    {
+                        if ((x + y) % 2 == 1) continue;
 
-            // Assert
-            Assert.IsTrue(canMove, "AI шашка не на краю доски должна иметь хотя бы один ход");
+                        // For ai invert increasing
+                        if (opponent == OpponentType.AI)
+                            checkers.Add(new CheckerData(BOARD_WIDTH - x - 1, BOARD_HEIGHT - y - 1, CheckerType.Usual, opponent, BOARD_HEIGHT, BOARD_WIDTH));
+                        else checkers.Add(new CheckerData(x, y, CheckerType.Usual, opponent, BOARD_HEIGHT, BOARD_WIDTH));
+
+
+                        // board not full yet
+                        if (checkers.Count != (BOARD_HEIGHT * BOARD_WIDTH) / 2)
+                        {
+                            var tempBoard = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+                            // Assert
+                            Assert.IsTrue(tempBoard.IsOpponentCanMove(opponent), "Full board has no moves.");
+                        }
+                    }
+                }
+
+                var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+                // Act
+                bool canMove = board.IsOpponentCanMove(opponent);
+
+                // Assert
+                Assert.IsFalse(canMove, "Full board has no moves.");
+
+                checkers.RemoveAt(checkers.Count / 2);
+                board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+
+                canMove = board.IsOpponentCanMove(opponent);
+
+                // Assert
+                Assert.IsTrue(canMove, "There is has at least one move. ");
+            }
         }
 
         [Test]
-        public void BoardPosition_IsOpponentCanMove_WithBlockedCheckers_ReturnsFalse()
+        public void IsOpponentCanMove_Cases()
+        {
+            // Data
+            (List<CheckerData> checkers, OpponentType opponent)[] poses = new (List<CheckerData>, OpponentType)[]{
+                // case 1
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.Player),
+
+                // case 2
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.AI),
+
+                // case 3
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 7, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.Player),
+
+                // case 4
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.AI),
+
+                // case 5
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(4, 6, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 5, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(7, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.Player),
+
+                // case 6
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(4, 6, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 5, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(7, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.AI)
+            };
+
+            foreach (var pos in poses)
+            {
+                // Arrange
+                var board = new BoardPosition(pos.checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+                // Act
+                bool canMove = board.IsOpponentCanMove(pos.opponent);
+
+                // Assert
+                Assert.IsTrue(canMove, $"{pos.opponent} must have move. ");
+            }
+        }
+
+        [Test]
+        public void IsOpponentCanMove_WithBlockedCheckers()
         {
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(0, 0, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(0, 0, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -65,47 +175,154 @@ namespace Tests.EditMode.Shared
             bool canMove = board.IsOpponentCanMove(OpponentType.AI);
 
             // Assert - все на последнем ряду, ходов вперёд нет
-            Assert.IsFalse(canMove, "Заблокированные шашки не должны иметь ходов");
+            Assert.IsFalse(canMove, "Blocked checkers has not moves.");
         }
 
+
+
+
         [Test]
-        public void BoardPosition_IsOpponentNeedBeatChecker_ReturnsTrue_WhenBeatAvailable()
+        public void IsOpponentNeedBeatChecker_OneCheckerOnBoard()
         {
-            // Arrange
-            var checkers = new List<CheckerData>
-            {
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
-            };
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+            OpponentType[] opponents = { OpponentType.AI, OpponentType.Player };
 
-            // Assert
-            Assert.IsTrue(board.IsOpponentNeedBeatChecker(OpponentType.AI), "AI должен видеть возможность взятия");
+            foreach (var opponent in opponents)
+            {
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    for (int x = 0; x < BOARD_WIDTH; x++)
+                    {
+                        if ((x + y) % 2 == 1) continue;
+
+                        // Arrange
+                        var checkers = new List<CheckerData>
+                        {
+                            new CheckerData(x, y, CheckerType.Usual, opponent, BOARD_HEIGHT, BOARD_WIDTH)
+                        };
+                        var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+                        // Act
+                        bool needBeat = board.IsOpponentNeedBeatChecker(opponent);
+
+                        // Assert
+                        Assert.IsFalse(needBeat, $"{opponent} cant beat. ");
+                    }
+                }
+            }
         }
 
         [Test]
-        public void BoardPosition_IsOpponentNeedBeatChecker_ReturnsFalse_WhenNoBeat()
+        public void IsOpponentNeedBeatChecker_IncreasingCountOfCheckersInAnyPositionOnBoard_AIAndPlayerChecker()
         {
-            // Arrange
-            var checkers = new List<CheckerData>
-            {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
-            };
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+            OpponentType[] opponents = { OpponentType.AI, OpponentType.Player };
 
-            // Assert
-            Assert.IsFalse(board.IsOpponentNeedBeatChecker(OpponentType.AI), "Без шашек противника нечего бить");
+            foreach (var opponent in opponents)
+            {
+                var checkers = new List<CheckerData>();
+
+                for (int y = 0; y < BOARD_HEIGHT; y++)
+                {
+                    for (int x = 0; x < BOARD_WIDTH; x++)
+                    {
+                        if ((x + y) % 2 == 1) continue;
+
+                        // For ai invert increasing
+                        if (opponent == OpponentType.AI)
+                            checkers.Add(new CheckerData(BOARD_WIDTH - x - 1, BOARD_HEIGHT - y - 1, CheckerType.Usual, opponent, BOARD_HEIGHT, BOARD_WIDTH));
+                        else checkers.Add(new CheckerData(x, y, CheckerType.Usual, opponent, BOARD_HEIGHT, BOARD_WIDTH));
+
+                        var tempBoard = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+                        // Assert
+                        Assert.IsFalse(tempBoard.IsOpponentNeedBeatChecker(opponent), "Opponent cant beat, because there are not antagosint checkers.");
+                    }
+                }
+            }
         }
 
         [Test]
-        public void BoardPosition_MakeMove_UpdatesCheckerPosition()
+        public void IsOpponentNeedBeatChecker_Cases()
+        {
+            // Data
+            (List<CheckerData> checkers, OpponentType opponent)[] poses = new (List<CheckerData>, OpponentType)[]{
+                // case 1
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.Player),
+
+                // case 2
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.AI),
+
+                // case 3
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 7, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(6, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.Player),
+
+                // case 4
+                (new List<CheckerData>()
+                {
+                    new CheckerData(2, 6, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(6, 2, CheckerType.King, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.AI),
+
+                // case 5
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(4, 6, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.Player),
+
+                // case 6
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(4, 6, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(7, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                }, OpponentType.AI)
+            };
+
+            int i = 1;
+            foreach (var pos in poses)
+            {
+                // Arrange
+                var board = new BoardPosition(pos.checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+                // Act
+                bool needBeat = board.IsOpponentNeedBeatChecker(pos.opponent);
+
+                // Assert
+                Assert.IsTrue(needBeat, $"{pos.opponent} must beat. {i++}");
+            }
+        }
+
+
+
+
+        [Test]
+        public void MakeMove_UpdatesCheckerPosition()
         {
             // Arrange - AI шашка на (2,1), ход на (3,2)
             var from = new Vector2Int(2, 2);
             var to = new Vector2Int(1, 1);
             var checkers = new List<CheckerData>
             {
-                new CheckerData(from.x, from.y, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(from.x, from.y, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -122,15 +339,15 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void BoardPosition_MakeMove_Beat_RemovesOpponentChecker()
+        public void MakeMove_Beat_RemovesOpponentChecker()
         {
             // Arrange - AI шашка на (2,1), ход на (3,2)
             var from = new Vector2Int(2, 2);
             var to = new Vector2Int(0, 0);
             var checkers = new List<CheckerData>
             {
-                new CheckerData(from.x, from.y, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(1,1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(from.x, from.y, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(1,1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -148,13 +365,13 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void BoardPosition_MakeMove_PromotesToKing_WhenReachesLastRow()
+        public void MakeMove_PromotesToKing_WhenReachesLastRow()
         {
             // Arrange - AI шашка на предпоследнем ряду
             var from = new Vector2Int(7, 1);
             var checkers = new List<CheckerData>
             {
-                new CheckerData(from.x, from.y, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(from.x, from.y, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var to = new Vector2Int(6, 0); // Последний ряд для AI
@@ -164,18 +381,18 @@ namespace Tests.EditMode.Shared
 
             // Assert
             Assert.IsTrue(transformed, "Шашка должна превратиться в дамку");
-            Assert.AreEqual(CheckerType.KING, board.Data[to.x, to.y].Type, "На последнем ряду должна быть дамка");
-            Assert.AreEqual(CheckerType.KING, updatedChecker.Type, "Возвращённая шашка должна быть дамкой");
+            Assert.AreEqual(CheckerType.King, board.Data[to.x, to.y].Type, "На последнем ряду должна быть дамка");
+            Assert.AreEqual(CheckerType.King, updatedChecker.Type, "Возвращённая шашка должна быть дамкой");
         }
 
         [Test]
-        public void BoardPosition_MakeMove_InvalidMove_ThrowsException()
+        public void MakeMove_InvalidMove_ThrowsException()
         {
             // Arrange - шашка и целевая клетка не по диагонали
             var from = new Vector2Int(2, 2);
             var checkers = new List<CheckerData>
             {
-                new CheckerData(from.x, from.y, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(from.x, from.y, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var to = new Vector2Int(2, 6); // Горизонтальный ход — невалидный
@@ -187,76 +404,287 @@ namespace Tests.EditMode.Shared
             }, "Должно быть выброшено исключение при невалидном ходе");
         }
 
+
+
+
         [Test]
-        public void BoardPosition_GetAllPossibleMoves_AIMovesBackward()
+        public void GetAllPossibleMoves_Cases()
         {
-            // Arrange - AI шашка
-            var checkers = new List<CheckerData>
-            {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+            // Data
+            (List<CheckerData> checkers, OpponentType opponent, CheckerMove[] moves)[] cases = new (List<CheckerData>, OpponentType, CheckerMove[])[]{
+                // Case 1
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(2,4), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(4,4), OpponentType.Player, false)
+                }),
+
+                // Case 2
+                (new List<CheckerData>()
+                {
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(4,4), new Vector2Int(3,3), OpponentType.AI, false),
+                    new CheckerMove(new Vector2Int(4,4), new Vector2Int(5,3), OpponentType.AI, false)
+                }),
+
+                // Case 3
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(1,3), new Vector2Int(0,4), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(1,3), new Vector2Int(2,4), OpponentType.Player, false)
+                }),
+
+                // Case 4
+                (new List<CheckerData>()
+                {
+                    new CheckerData(6, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(6,4), new Vector2Int(5,3), OpponentType.AI, false),
+                    new CheckerMove(new Vector2Int(6,4), new Vector2Int(7,3), OpponentType.AI, false)
+                }),
+
+                // Case 5
+                (new List<CheckerData>()
+                {
+                    new CheckerData(1, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(1,5), new Vector2Int(0,6), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(1,5), new Vector2Int(2,6), OpponentType.Player, false)
+                }),
+
+                // Case 6
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(1,5), OpponentType.Player, true)
+                }),
+
+                // Case 7
+                (new List<CheckerData>()
+                {
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(4,4), new Vector2Int(2,2), OpponentType.AI, true)
+                }),
+
+                // Case 8
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(1,5), OpponentType.Player, true),
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(5,5), OpponentType.Player, true)
+                }),
+
+                // Case 9
+                (new List<CheckerData>()
+                {
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(4,4), new Vector2Int(2,2), OpponentType.AI, true),
+                    new CheckerMove(new Vector2Int(4,4), new Vector2Int(6,2), OpponentType.AI, true)
+                }),
+
+                // Case 10
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(1,5), OpponentType.Player, true)
+                }),
+
+                // Case 11
+                (new List<CheckerData>()
+                {
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(6, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(4,4), new Vector2Int(2,2), OpponentType.AI, true)
+                }),
+
+                // Case 12
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 4, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{}),
+
+                // Case 13
+                (new List<CheckerData>()
+                {
+                    new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{}),
+
+                // Case 14
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.King, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+
+                    new CheckerData(0, 0, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 5, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(6, 6, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(5, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(6, 0, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 5, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(0, 6, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(2,4), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(4,4), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(2,2), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(4,2), OpponentType.Player, false)
+                }),
+
+                // Case 15
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.King, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(1,5), OpponentType.Player, true),
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(0,6), OpponentType.Player, true)
+                }),
+
+                // Case 16
+                (new List<CheckerData>()
+                {
+                    new CheckerData(4, 4, CheckerType.King, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(4,4), new Vector2Int(2,2), OpponentType.AI, true)
+                }),
+
+                // Case 17
+                (new List<CheckerData>()
+                {
+                    new CheckerData(0, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(0,2), new Vector2Int(1,3), OpponentType.Player, false)
+                }),
+
+                // Case 18
+                (new List<CheckerData>()
+                {
+                    new CheckerData(7, 5, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(7,5), new Vector2Int(6,4), OpponentType.AI, false)
+                }),
+
+                // Case 19
+                (new List<CheckerData>()
+                {
+                    new CheckerData(2, 6, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(2,6), new Vector2Int(1,7), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(2,6), new Vector2Int(3,7), OpponentType.Player, false)
+                }),
+
+                // Case 20
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.AI,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,1), new Vector2Int(2,0), OpponentType.AI, false),
+                    new CheckerMove(new Vector2Int(3,1), new Vector2Int(4,0), OpponentType.AI, false)
+                }),
+
+                // Case 21
+                (new List<CheckerData>()
+                {
+                    new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(2, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(4, 6, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                    new CheckerData(1, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                },
+                OpponentType.Player,
+                new CheckerMove[]{
+                    new CheckerMove(new Vector2Int(3,3), new Vector2Int(4,4), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(1,5), new Vector2Int(0,6), OpponentType.Player, false),
+                    new CheckerMove(new Vector2Int(1,5), new Vector2Int(2,6), OpponentType.Player, false)
+                })
             };
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
-            // Act
-            var moves = board.GetAllPossibleMoves(OpponentType.AI);
-
-            // Assert
-            Assert.IsTrue(moves.Count > 0, "Должны быть ходы");
-
-            // AI ходит вниз (увеличение X)
-            foreach (var move in moves)
+            int i = 1;
+            foreach (var c in cases)
             {
-                Assert.Less(move.To.y, move.From.y, $"AI шашка должна ходить вниз, но ход: {move.From} -> {move.To}");
+                // Arrange
+                var board = new BoardPosition(c.checkers, BOARD_WIDTH, BOARD_HEIGHT);
+
+                // Act
+                List<CheckerMove> moves = board.GetAllPossibleMoves(c.opponent);
+
+                // Assert
+                Assert.IsTrue(moves.Except(c.moves).Count() == 0 && c.moves.Except(moves).Count() == 0, $"Case fail. {i++}");
             }
         }
 
-        [Test]
-        public void BoardPosition_GetAllPossibleMoves_PlayerMovesUpward()
-        {
-            // Arrange - шашка игрока
-            var checkers = new List<CheckerData>
-            {
-                new CheckerData(0, 0, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
-            };
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
-            // Act
-            var moves = board.GetAllPossibleMoves(OpponentType.Player);
 
-            // Assert
-            Assert.IsTrue(moves.Count > 0, "Должны быть ходы");
-
-            // Игрок ходит вверх (уменьшение X)
-            foreach (var move in moves)
-            {
-                Assert.Less(move.From.y, move.To.y, $"Шашка игрока должна ходить вверх, но ход: {move.From} -> {move.To}");
-            }
-        }
 
         [Test]
-        public void BoardPosition_GetAllPossibleMoves_WhenBeatAvailable_ReturnsOnlyBeats()
-        {
-            // Arrange - позиция с возможностью взятия и простого хода
-            var checkers = new List<CheckerData>
-            {
-                new CheckerData(4, 4, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
-            };
-            var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
-
-            // Act
-            var moves = board.GetAllPossibleMoves(OpponentType.AI);
-
-            // Assert
-            Assert.IsTrue(moves.Count > 0, "Должны быть ходы");
-            Assert.IsTrue(moves.TrueForAll(m => m.IsBeatOpponentChecker), "Если есть взятие, все возвращаемые ходы должны быть взятиями");
-        }
-
-        [Test]
-        public void BoardPosition_IsCheckerExist_ReturnsTrue_ForExistingChecker()
+        public void IsCheckerExist_ReturnsTrue_ForExistingChecker()
         {
             // Arrange
-            var checker = new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker = new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
             var checkers = new List<CheckerData> { checker };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -265,10 +693,10 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void BoardPosition_IsCheckerExist_ReturnsFalse_ForCheckerNotOnTheBoard()
+        public void IsCheckerExist_ReturnsFalse_ForCheckerNotOnTheBoard()
         {
             // Arrange
-            var checker = new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker = new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
             var checkers = new List<CheckerData> { };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -277,12 +705,12 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void BoardPosition_IsCheckerExist_ReturnsFalse_ForNull()
+        public void IsCheckerExist_ReturnsFalse_ForNull()
         {
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -291,42 +719,45 @@ namespace Tests.EditMode.Shared
         }
 
         [Test]
-        public void BoardPosition_IsCheckerExist_ReturnsFalse_ForCheckerWithWrongPosition()
+        public void IsCheckerExist_ReturnsFalse_ForCheckerWithWrongPosition()
         {
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
-            var wrongChecker = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var wrongChecker = new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
 
             // Act & Assert
             Assert.IsFalse(board.IsCheckerExist(wrongChecker), "на таких координатах нет шашки, значит она не принадлежит этой доске.");
         }
 
+
+
+
         [Test]
-        public void BoardPosition_IsCheckerCanMoveAt_ReturnsTrue_ForValidMove()
+        public void IsCheckerCanMoveAt_ReturnsTrue_ForValidMove()
         {
             // Arrange
-            var checker = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker = new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
             var checkers = new List<CheckerData> { checker };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
-            var validTarget = new Vector2Int(2, 4); // Диагональ вниз-вправо
+            var validTarget = new Vector2Int(2, 4);
 
             // Act & Assert
             Assert.IsTrue(board.IsCheckerCanMoveAt(checker, validTarget), "Должен быть доступен ход по диагонали вперёд");
         }
 
         [Test]
-        public void BoardPosition_IsCheckerCanMoveAt_ReturnsFalse_ForInvalidMove()
+        public void IsCheckerCanMoveAt_ReturnsFalse_ForInvalidMove()
         {
             // Arrange
-            var checker = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker = new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
             var checkers = new List<CheckerData> { checker };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
-            var invalidTarget = new Vector2Int(3, 7); // Горизонтальный ход
+            var invalidTarget = new Vector2Int(3, 7);
 
             // Act & Assert
             Assert.IsFalse(board.IsCheckerCanMoveAt(checker, invalidTarget), "Не должен быть доступен горизонтальный ход");

@@ -14,22 +14,22 @@ namespace Tests.EditMode.Shared
         public void CheckerData_Constructor_AutoPromoteType()
         {
             // Arrange & Act
-            var checkerOnLastRow = new CheckerData(0, 0, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
-            var checkerOnFirstRow = new CheckerData(7, 7, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
+            var checkerOnLastRow = new CheckerData(0, 0, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var checkerOnFirstRow = new CheckerData(7, 7, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
 
             // Assert - конструктор НЕ меняет тип автоматически
-            Assert.AreEqual(CheckerType.KING, checkerOnLastRow.Type, "Конструктор не должен превращать шашку в дамку (это делает MakeMove)");
-            Assert.AreEqual(CheckerType.KING, checkerOnFirstRow.Type, "Конструктор не должен превращать шашку в дамку");
+            Assert.AreEqual(CheckerType.King, checkerOnLastRow.Type, "Конструктор не должен превращать шашку в дамку (это делает MakeMove)");
+            Assert.AreEqual(CheckerType.King, checkerOnFirstRow.Type, "Конструктор не должен превращать шашку в дамку");
         }
 
         [Test]
         public void CheckerData_Constructor_UsualChecker_NotOnPromotionRow_StaysUsual()
         {
             // Arrange
-            var checker = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker = new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
 
             // Assert
-            Assert.AreEqual(CheckerType.USUAL, checker.Type, "Шашка не на последнем ряду должна оставаться обычной");
+            Assert.AreEqual(CheckerType.Usual, checker.Type, "Шашка не на последнем ряду должна оставаться обычной");
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace Tests.EditMode.Shared
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var checker = board.Data[3, 3];
@@ -62,7 +62,7 @@ namespace Tests.EditMode.Shared
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var checker = board.Data[3, 3];
@@ -85,8 +85,8 @@ namespace Tests.EditMode.Shared
             // Arrange - AI шашка на (3,3), шашка игрока на (4,2) — диагональ вниз-влево
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(4, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(4, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var checker = board.Data[3, 3];
@@ -104,8 +104,8 @@ namespace Tests.EditMode.Shared
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var checker = board.Data[3, 3];
@@ -123,8 +123,8 @@ namespace Tests.EditMode.Shared
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(1, 1, CheckerType.KING, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(5, 5, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(1, 1, CheckerType.King, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 5, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var checker = checkers[0];
@@ -140,7 +140,7 @@ namespace Tests.EditMode.Shared
         public void CheckerData_Clone_CreatesIndependentCopy()
         {
             // Arrange
-            var original = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var original = new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
 
             // Act
             var clone = original.Clone(new Vector2Int(4, 4));
@@ -168,8 +168,8 @@ namespace Tests.EditMode.Shared
         public void CheckerData_Equals_SamePosition_ReturnsTrue()
         {
             // Arrange
-            var checker1 = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
-            var checker2 = new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker1 = new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker2 = new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
 
             // Act & Assert
             Assert.AreEqual(checker1.X, checker2.X, "X координаты должны совпадать");

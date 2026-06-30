@@ -2,7 +2,7 @@
 {
 	public enum CheckerType
 	{
-		USUAL,
-		KING
+		Usual,
+		King
     }
 }

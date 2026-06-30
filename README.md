@@ -37,7 +37,7 @@
 │   ├── Editor/                               
 │   │   └── BuildScript.cs                      # специальный скрипт для сборки проекта, под WebGL
 │   ├── Scripts/                                # Модули
-│   │   ├── Core/                               # Алгоритмическое ядро (независимая логика)
+│   │   ├── Core/                      # Слой алгоритмического ядро (независимая логика)
 │   │   │   ├── DataTypes/                      # Базовые типы данных для ядра
 │   │   │   │   ├── CheckerMove.cs              # Структура хода шашки
 │   │   │   │   ├── CheckerType.cs              # Тип шашки (обычный, дамка)
@@ -46,33 +46,36 @@
 │   │   │   ├── CheckerData.cs                  # Данные о шашке
 │   │   │   ├── Core.asmdef                     # Сборка (assembly) для ядра
 │   │   │   └── MinimaxCore.cs                  # Реализация минимакса с альфа-бета отсечением
-│   │   └── GamePlay/                           # Логика игрового процесса
-│   │       ├── GameSceneScripts/                   # Скрипты для игровой сцены
-│   │       │   ├── GameLogicLayer/                      # Слой игровой логики
-│   │       │   │   ├── BoardManager.cs                  # Управление доской и шашками (физическое перемещение, выбор, состояние)
-│   │       │   │   ├── CheckersAI.cs                    # ИИ бот для игры в шашки (использует MinimaxCore)
-│   │       │   │   ├── GameState.cs                     # Игровые флаги и состояние партии
-│   │       │   │   ├── InputController.cs               # Обработка ввода игрока (мышь и клавиатура)
-│   │       │   │   ├── MovesHistory.cs                  # История ходов
-│   │       │   │   └── UITabManager.cs                  # Управление вкладками UI на игровой сцене
-│   │       │   ├── PresentationLayer/                   # Слой представления (UI и визуальные компоненты)
-│   │       │   │   ├── BoardCell.cs                     # Игровой, физический объект клетки доски
-│   │       │   │   ├── CameraController.cs              # Управление камерой
-│   │       │   │   ├── Checker.cs                       # Игровой, физический объект шашки
-│   │       │   │   ├── CheckersBoard.cs                 # Создание физической доски и её логика
-│   │       │   │   ├── MovesHistoryTab.cs               # Вкладка журнала партии
-│   │       │   │   ├── PauseTab.cs                      # Вкладка паузы
-│   │       │   │   └── PositionAssessmentTab.cs         # Вкладка оценки позиции
-│   │       │   └── EndOfGameType.cs                  # Тип окончания игры (победа, поражение, ничья, ничего)
-│   │       ├── MenuSceneScripts/                   # Скрипты для меню
+│   │   ├── GameLogic/                      # Слой игровой логики
+│   │   │   ├── BoardCell.cs                     # Игровой, физический объект клетки доски
+│   │   │   ├── BoardManager.cs                  # Управление доской и шашками
+│   │   │   ├── CameraController.cs              # Управление камерой
+│   │   │   ├── Checker.cs                       # Игровой, физический объект шашки
+│   │   │   ├── CheckersAI.cs                    # ИИ бот для игры в шашки (использует MinimaxCore)
+│   │   │   ├── CheckersBoard.cs                 # Создание физической доски и её логика
+│   │   │   ├── GameLogic.asmdef            # Сборка для слоя игровой логики
+│   │   │   ├── GameManager.cs                   # класс, через который происходит взаимодействие со слоем представления
+│   │   │   ├── InputController.cs               # Обработка ввода игрока (мышь и клавиатура)
+│   │   │   └── MovesHistory.cs                  # История ходов
+│   │   ├── Infrastructure/                    # Слой инфраструктуры (вспомогательный)
+│   │   │   ├── EndOfGameType.cs                  # Тип окончания игры (победа, поражение, ничья, ничего)
+│   │   │   ├── FileStorage.cs                      # Абстрактный класс для работы с файлами 
+│   │   │   ├── GameSettings.cs                     # Настройки игры (сохраняются в JSON)
+│   │   │   ├── GameStatistics.cs                   # Статистика игр (сохраняется в JSON)
+│   │   │   ├── Infrastructure.asmdef          # Сборка для слоя инфраструктуры
+│   │   │   ├── PlatformService.cs                  # Абстракция над классом Application
+│   │   │   └── SceneNames.cs                       # Константы имён сцен
+│   │   └── Presentation/                      # Слой игровой представления
+│   │       ├── GameScene/                   # Скрипты для игровой сцены
+│   │       │   ├── GameTabManager.cs                # класс, через который происходит взаимодействие со всем слоем
+│   │       │   ├── MovesHistoryTab.cs               # Вкладка журнала партии
+│   │       │   ├── PauseTab.cs                      # Вкладка паузы
+│   │       │   └── PositionAssessmentTab.cs         # Вкладка оценки позиции
+│   │       ├── MenuScene/                   # Скрипты для меню
 │   │       │   ├── MenuTab.cs                      # Главная вкладка меню
 │   │       │   ├── SettingsTab.cs                  # Вкладка настроек
-│   │       │   └── StatisticTab.cs                 # Вкладка статистики
-│   │       ├── FileStorage.cs                      # Абстрактный класс для работы с файлами  
-│   │       ├── GamePlay.asmdef                     # Сборка для игрового процесса
-│   │       ├── GameSettings.cs                     # Настройки игры (сохраняются в JSON)
-│   │       ├── GameStatistic.cs                    # Статистика игр (сохраняется в JSON)
-│   │       └── SceneNames.cs                       # Константы имён сцен
+│   │       │   └── StatisticsTab.cs                # Вкладка статистики
+│   │       └── Presentation.asmdef            # Сборка для слоя представления
 │   ├── Settings/                                   # Настройки проекта Unity
 │   ├── Sprites/                                    # 2D-спрайты
 │   │   └── PositionAssessmentForegroundSprite.png 	# Фоновый спрайт для вкладки оценки позиции
@@ -308,7 +311,6 @@ docker rm checkers-app
 
  - Unity ≥ 6000.4.10f1 (рекомендуется версия, указанная в ProjectSettings/ProjectVersion.txt)
  - .NET: API Compatibility Level - .NET Standard 2.1
- - Язык: C#
  - Платформа сборки: WebGL (для Docker) / Windows, macOS, Linux (для редактора)
  - Docker ≥ 20.10 (для запуска в контейнере)
  - Для локального запуска: Python 3.x

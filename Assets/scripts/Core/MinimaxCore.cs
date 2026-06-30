@@ -11,7 +11,7 @@ namespace Assets.scripts.Core
         public const int PROXIMITY_CENTER_COUNT_OF_POINTS = 20;
         public const int PROXIMITY_END_OF_BOARD_COUNT_OF_POINTS = 100;
 
-        private bool _isStopped = false;
+        private bool _isCalculationEnabled = true;
 
         private bool _isGiveaways;
         private int _boardHeight;
@@ -26,8 +26,6 @@ namespace Assets.scripts.Core
             _boardHeight = boardHeight;
             _boardWidth = boardWidth;
             _isGiveaways = isGiveaways;
-
-            _isStopped = false;
             _aiSearchDeep = aiSearchDeep;
         }
 
@@ -52,15 +50,14 @@ namespace Assets.scripts.Core
             }
         }
 
-
-        public void RestartCalculating()
+        public void EnableCalculation()
         {
-            _isStopped = false;
+            _isCalculationEnabled = true;
         }
 
-        public void StopCalculating()
+        public void DisableCalculation()
         {
-            _isStopped = true;
+            _isCalculationEnabled = false;
         }
 
         public float GetPositionAssessment(BoardPosition position)
@@ -105,7 +102,7 @@ namespace Assets.scripts.Core
 
             float points = 0;
 
-            if (checker.Type == CheckerType.KING)
+            if (checker.Type == CheckerType.King)
                 points += KING_CHECKER_COUNT_OF_POINTS;
             else
             {
@@ -125,13 +122,7 @@ namespace Assets.scripts.Core
             return points;
         }
 
-
-        private async Awaitable<(float points, CheckerMove? move)> EvaluateTree(
-            BoardPosition pos,
-            bool isMax,
-            float alpha,
-            float beta,
-            int curDeep = 0)
+        private async Awaitable<(float points, CheckerMove? move)> EvaluateTree(BoardPosition pos, bool isMax, float alpha, float beta, int curDeep = 0)
         {
             _nodesVisited++;
 
@@ -141,7 +132,7 @@ namespace Assets.scripts.Core
                 await Awaitable.NextFrameAsync();
             }
 
-            if (_isStopped) return (0, null);
+            if (!_isCalculationEnabled) return (0, null);
 
             CheckerMove? move = null;
 
@@ -175,7 +166,7 @@ namespace Assets.scripts.Core
                     curDeep + 1
                 );
 
-                if (_isStopped) return (0, null);
+                if (!_isCalculationEnabled) return (0, null);
 
                 if (isMax)
                 {

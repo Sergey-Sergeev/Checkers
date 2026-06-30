@@ -1,6 +1,8 @@
 ﻿<Solution>
-  <Project Path="GamePlay.csproj" />
+  <Project Path="GameLogic.csproj" />
+  <Project Path="Infrastructure.csproj" />
   <Project Path="Tests.csproj" />
+  <Project Path="Presentation.csproj" />
   <Project Path="Core.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
   <Project Path="PlayModeTests.csproj" />

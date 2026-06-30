@@ -32,7 +32,7 @@ namespace Tests.EditMode.Core
         {
             try
             {
-                _minimax.StopCalculating();
+                _minimax.DisableCalculation();
             }
             catch (Exception ex)
             {
@@ -44,20 +44,20 @@ namespace Tests.EditMode.Core
         {
             _playerCheckersList = new List<CheckerData>
             {
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
 
             _aiCheckersList = new List<CheckerData>
             {
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
 
             _mixedCheckersList = new List<CheckerData>
             {
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 1, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
         }
 
@@ -120,7 +120,7 @@ namespace Tests.EditMode.Core
         public void GetPointsForChecker_UsualChecker_ReturnsPositivePoints()
         {
             // Arrange 
-            var checker = new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
+            var checker = new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
             var checkers = new List<CheckerData> { checker };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -135,8 +135,8 @@ namespace Tests.EditMode.Core
         public void GetPointsForChecker_KingChecker_ReturnsMoreThanUsual()
         {
             // Arrange
-            var usualChecker = new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
-            var kingChecker = new CheckerData(2, 2, CheckerType.KING, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
+            var usualChecker = new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
+            var kingChecker = new CheckerData(2, 2, CheckerType.King, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
 
             var boardUsual = new BoardPosition(new List<CheckerData> { usualChecker }, BOARD_WIDTH, BOARD_HEIGHT);
             var boardKing = new BoardPosition(new List<CheckerData> { kingChecker }, BOARD_WIDTH, BOARD_HEIGHT);
@@ -153,8 +153,8 @@ namespace Tests.EditMode.Core
         public void GetPointsForChecker_CenterPosition_GetsBonus()
         {
             // Arrange
-            var centerChecker = new CheckerData(4, 4, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
-            var edgeChecker = new CheckerData(0, 0, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
+            var centerChecker = new CheckerData(4, 4, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
+            var edgeChecker = new CheckerData(0, 0, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH);
 
             var boardCenter = new BoardPosition(new List<CheckerData> { centerChecker }, BOARD_WIDTH, BOARD_HEIGHT);
             var boardEdge = new BoardPosition(new List<CheckerData> { edgeChecker }, BOARD_WIDTH, BOARD_HEIGHT);
@@ -171,8 +171,8 @@ namespace Tests.EditMode.Core
         public void GetPointsForChecker_AICheckerNearPromotion_GetsBonus()
         {
             // Arrange - 
-            var nearPromotion = new CheckerData(1, 1, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
-            var farFromPromotion = new CheckerData(6, 6, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var nearPromotion = new CheckerData(1, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
+            var farFromPromotion = new CheckerData(6, 6, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH);
 
             var boardNear = new BoardPosition(new List<CheckerData> { nearPromotion }, BOARD_WIDTH, BOARD_HEIGHT);
             var boardFar = new BoardPosition(new List<CheckerData> { farFromPromotion }, BOARD_WIDTH, BOARD_HEIGHT);
@@ -204,8 +204,8 @@ namespace Tests.EditMode.Core
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)  // Под боем
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)  // Под боем
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -223,9 +223,9 @@ namespace Tests.EditMode.Core
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(0, 0, CheckerType.KING, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(0, 0, CheckerType.King, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -242,7 +242,7 @@ namespace Tests.EditMode.Core
             // Arrange - шашка игрока может ходить
             var checkers = new List<CheckerData>
             {
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -259,8 +259,8 @@ namespace Tests.EditMode.Core
             // Arrange - дамка может ходить назад
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.KING, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(5, 5, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.King, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -278,7 +278,7 @@ namespace Tests.EditMode.Core
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -291,7 +291,7 @@ namespace Tests.EditMode.Core
 
             // Применяем ход и проверяем превращение
             board.MakeMove(move.From, move.To, out _, out bool transformed);
-            Assert.IsTrue(transformed || board.Data[move.To.x, move.To.y].Type == CheckerType.KING,
+            Assert.IsTrue(transformed || board.Data[move.To.x, move.To.y].Type == CheckerType.King,
                 "Если ход ведёт на последний ряд, шашка должна стать дамкой");
         }
 
@@ -301,10 +301,10 @@ namespace Tests.EditMode.Core
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(7, 7, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(5, 5, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(0, 0, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(7, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 5, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(0, 0, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -334,7 +334,7 @@ namespace Tests.EditMode.Core
                     if ((i + j) % 2 == 1 && (i < 3 || i > 4))
                     {
                         var opponent = i < 2 ? OpponentType.Player : OpponentType.AI;
-                        checkers.Add(new CheckerData(i, j, CheckerType.USUAL, opponent, BOARD_HEIGHT, BOARD_WIDTH));
+                        checkers.Add(new CheckerData(i, j, CheckerType.Usual, opponent, BOARD_HEIGHT, BOARD_WIDTH));
                     }
                 }
             }
@@ -354,9 +354,9 @@ namespace Tests.EditMode.Core
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(7, 7, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(6, 6, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(7, 7, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(6, 6, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -374,11 +374,11 @@ namespace Tests.EditMode.Core
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 5, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(5, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(1, 5, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(1, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 
@@ -417,23 +417,23 @@ namespace Tests.EditMode.Core
             var checkers = new List<CheckerData>
             {
                 // Дамка AI
-                new CheckerData(4, 4, CheckerType.KING, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(4, 4, CheckerType.King, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
         
                 // Шашки противника для боя
-                new CheckerData(6, 6, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 5, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(5, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(6, 6, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 5, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
         
                 // Шашки противника, которые могут сбить дамку AI после первого боя
-                new CheckerData(1, 7, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(7, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),                
+                new CheckerData(1, 7, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(7, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),                
         
                 // Вариант с одной шашкой, но безопасный (дамку не собьют)
-                new CheckerData(7, 3, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(5, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(3, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(7, 3, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(3, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
 

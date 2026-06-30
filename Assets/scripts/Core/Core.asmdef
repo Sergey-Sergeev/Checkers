@@ -1,9 +1,7 @@
 {
     "name": "Core",
     "rootNamespace": "",
-    "references": [
-        "GUID:1968fe948bf639245be2f7d4c48b3c2a"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

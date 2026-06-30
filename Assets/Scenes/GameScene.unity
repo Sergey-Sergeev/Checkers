@@ -372,8 +372,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000030517578}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.000030518}
+  m_SizeDelta: {x: 0, y: -0.000061035}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &244013858
 MonoBehaviour:
@@ -1532,7 +1532,6 @@ GameObject:
   - component: {fileID: 1405355351}
   - component: {fileID: 1405355349}
   - component: {fileID: 1405355353}
-  - component: {fileID: 1405355354}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -1592,21 +1591,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1405355348}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 647916d0ee778e54fb23ffc09cf0667c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe680207ba32d0647b262b637bcf23b8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Assets.UIManager
---- !u!114 &1405355354
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405355348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62acf1f9a203639449f50ab96d1dad78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Assets.Game
+  m_EditorClassIdentifier: GameLogic::Assets.scripts.GameLogic.GameManager
 --- !u!1 &1486971232
 GameObject:
   m_ObjectHideFlags: 0
@@ -1664,9 +1651,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '0.12
-
-'
+  m_text: 0.50
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2217,7 +2202,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 841543555}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.5133701
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

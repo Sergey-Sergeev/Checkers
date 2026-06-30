@@ -42,15 +42,14 @@ namespace Assets.scripts.Core
             Y = y;
             _curCountOfPoints = 0;
             _positionHash = 0;
+            _cachedHash = 0;
 
-            if (Type == CheckerType.USUAL)
+            if (Type == CheckerType.Usual)
             {
                 if ((y == 0 && Opponent == OpponentType.AI) || (y == _boardHeight - 1 && Opponent == OpponentType.Player))
-                    Type = CheckerType.KING;
+                    Type = CheckerType.King;
                 else _usualValidMoves = new SimpleMoves(x, y);
             }
-
-            ReCalculateHash();
         }
 
         public float GetPointsForChecker(BoardPosition position, Func<BoardPosition, CheckerData, float> calculatingPointsFunc)
@@ -63,17 +62,15 @@ namespace Assets.scripts.Core
             return _curCountOfPoints;
         }
 
-
         public CheckerData Clone(Vector2Int newPos)
         {
             return new CheckerData(newPos.x, newPos.y, Type, Opponent, _boardHeight, _boardWidth);
         }
 
-        public IReadOnlyList<CheckerMove> GetAllMovesForChecker(in BoardPosition position)
+        public IReadOnlyList<CheckerMove> GetAllMovesForChecker(BoardPosition position)
         {
-            if (Type == CheckerType.USUAL)
+            if (Type == CheckerType.Usual)
             {
-
                 int hash = GetHashCodeForPosition(position);
 
                 if (hash != _positionHash || _cachedMoves == null)
@@ -83,7 +80,6 @@ namespace Assets.scripts.Core
                 }
 
                 return _cachedMoves;
-
             }
             return GetAllMovesAsKing(position);
         }
@@ -120,7 +116,7 @@ namespace Assets.scripts.Core
 
         public bool IsCheckerNeedBeat(BoardPosition position)
         {
-            if (Type == CheckerType.USUAL)
+            if (Type == CheckerType.Usual)
                 return
                     IsCheckerCanBeatChecker(position, _usualValidMoves.f1m1, _usualValidMoves.f2m1) ||
                     IsCheckerCanBeatChecker(position, _usualValidMoves.f1m2, _usualValidMoves.f2m2) ||
@@ -379,13 +375,10 @@ namespace Assets.scripts.Core
 
         public override int GetHashCode()
         {
-            return _cachedHash;
-        }
+            if (_cachedHash == 0)
+                _cachedHash = HashCode.Combine(X, Y, Type, Opponent);
 
-        private void ReCalculateHash()
-        {
-            //_cachedHash = RuntimeHelpers.GetHashCode(this);
-            _cachedHash = HashCode.Combine(X, Y, Type, Opponent);
+            return _cachedHash;
         }
 
         public static bool operator ==(CheckerData left, CheckerData right)

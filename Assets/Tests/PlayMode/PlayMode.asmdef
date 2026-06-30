@@ -4,8 +4,9 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "GamePlay",
-        "Core"
+        "Core",
+        "GameLogic",
+        "Infrastructure"
     ],
     "includePlatforms": [],
     "excludePlatforms": [

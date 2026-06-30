@@ -2,9 +2,9 @@
 using Assets.scripts.Core;
 using System;
 using System.Collections.Generic;
-using Assets.scripts.GamePlay;
 using UnityEngine;
 using System.Threading.Tasks;
+using Assets.scripts.Infrastructure;
 
 namespace Tests.EditMode.Core
 {
@@ -21,8 +21,8 @@ namespace Tests.EditMode.Core
             const int smallHeight = GameSettings.BOARD_MIN_HEIGHT;
             var checkers = new List<CheckerData>
             {
-                new CheckerData(1, 1, CheckerType.USUAL, OpponentType.AI, smallHeight, smallWidth),
-                new CheckerData(2, 2, CheckerType.USUAL, OpponentType.Player, smallHeight, smallWidth)
+                new CheckerData(1, 1, CheckerType.Usual, OpponentType.AI, smallHeight, smallWidth),
+                new CheckerData(2, 2, CheckerType.Usual, OpponentType.Player, smallHeight, smallWidth)
             };
             var board = new BoardPosition(checkers, smallWidth, smallHeight);
             var minimax = new MinimaxCore(smallHeight, smallWidth, 2, false);
@@ -40,9 +40,9 @@ namespace Tests.EditMode.Core
             // Arrange
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.KING, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(4, 4, CheckerType.KING, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(5, 5, CheckerType.KING, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.King, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(4, 4, CheckerType.King, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(5, 5, CheckerType.King, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var minimax = new MinimaxCore(BOARD_HEIGHT, BOARD_WIDTH, 3, false);
@@ -57,7 +57,7 @@ namespace Tests.EditMode.Core
             {
                 var move = result.Value;
                 var checker = board.Data[move.From.x, move.From.y];
-                Assert.AreEqual(CheckerType.KING, checker.Type, "Перемещаемая фигура должна быть дамкой");
+                Assert.AreEqual(CheckerType.King, checker.Type, "Перемещаемая фигура должна быть дамкой");
                 Assert.IsTrue(
                     board.IsCheckerCanMoveAt(checker, move.To),
                     "Ход дамки должен быть валидным"
@@ -86,7 +86,7 @@ namespace Tests.EditMode.Core
             // Arrange - одна шашка AI
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var minimax = new MinimaxCore(BOARD_HEIGHT, BOARD_WIDTH, 3, false);
@@ -104,9 +104,9 @@ namespace Tests.EditMode.Core
             // Arrange - только шашки игрока
             var checkers = new List<CheckerData>
             {
-                new CheckerData(0, 0, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(2, 0, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(4, 0, CheckerType.USUAL, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(0, 0, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(2, 0, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(4, 0, CheckerType.Usual, OpponentType.Player, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var minimax = new MinimaxCore(BOARD_HEIGHT, BOARD_WIDTH, 3, false);
@@ -124,8 +124,8 @@ namespace Tests.EditMode.Core
             // Arrange - только шашки AI
             var checkers = new List<CheckerData>
             {
-                new CheckerData(3, 3, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
-                new CheckerData(4, 4, CheckerType.USUAL, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
+                new CheckerData(3, 3, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH),
+                new CheckerData(4, 4, CheckerType.Usual, OpponentType.AI, BOARD_HEIGHT, BOARD_WIDTH)
             };
             var board = new BoardPosition(checkers, BOARD_WIDTH, BOARD_HEIGHT);
             var minimax = new MinimaxCore(BOARD_HEIGHT, BOARD_WIDTH, 3, false);

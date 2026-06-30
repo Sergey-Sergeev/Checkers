@@ -10,8 +10,8 @@ namespace Assets.scripts.Core
         public CheckerData?[,] Data { get; private set; }
         public int PlayerCheckerCount { get; private set; }
         public int AICheckerCount { get; private set; }
-
         public bool IsOpponentContinueBeating { get; private set; }
+
 
         private CheckerData _continueBeatingChecker;
         private int _boardWidth;
@@ -52,7 +52,6 @@ namespace Assets.scripts.Core
             clone._continueBeatingChecker = _continueBeatingChecker;
             return clone;
         }
-
 
         public bool IsOpponentCanMove(OpponentType opponent)
         {

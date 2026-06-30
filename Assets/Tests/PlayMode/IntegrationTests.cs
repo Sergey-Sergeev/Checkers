@@ -1,7 +1,6 @@
 using Assets.scripts.Core;
-using Assets.scripts.GamePlay;
-using Assets.scripts.GamePlay.GameSceneScripts;
-using Assets.scripts.GamePlay.GameSceneScripts.GameLogicLayer;
+using Assets.scripts.GameLogic;
+using Assets.scripts.Infrastructure;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,11 +20,12 @@ namespace Tests.PlayMode
         public IEnumerator Setup()
         {
             // Настраиваем игру
-            GameSettings.Instance.SetFirstMoveTurn(OpponentType.Player);
-            GameSettings.Instance.SetBoardSize(8, 8);
-            GameSettings.Instance.SetAISearchDeep(4);
-            GameSettings.Instance.SetIsGiveaways(false);
-            GameSettings.Instance.SetOpponentCountOfChechers(12);
+            GameSettings.Instance.FirstMoveTurn = OpponentType.Player;
+            GameSettings.Instance.BoardHeight = 8;
+            GameSettings.Instance.BoardWidth = 8;
+            GameSettings.Instance.AISearchDeep = 4;
+            GameSettings.Instance.IsGiveaways = false;
+            GameSettings.Instance.OpponentCountOfChechers = 12;
             GameSettings.Instance.IsCustomBoard = true;
             GameSettings.Instance.CustomBoardPosition = CreateCustomBoard();
             yield return null;
@@ -39,7 +39,7 @@ namespace Tests.PlayMode
             yield return null;
 
             // Создаем объект AI и добавляем компонент
-            GameSettings.Instance.SetAISearchDeep(8); // big brain time on
+            GameSettings.Instance.AISearchDeep = 8; // big brain time on
 
             _aiGameObject = new GameObject("TestAIPlaysAsPlayer");
             _aiComponent = _aiGameObject.AddComponent<CheckersAI>();
@@ -48,26 +48,26 @@ namespace Tests.PlayMode
             yield return null;
 
             // Act - Ждем
-            while (GameState.EndOfGame == EndOfGameType.None)
+            while (GameManager.Instance.CurrentEndOfGameState == EndOfGameType.None)
             {
                 yield return new WaitForSeconds(0.3f);
             }
 
             // Assert
-            Assert.IsTrue(GameState.EndOfGame == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
+            Assert.IsTrue(GameManager.Instance.CurrentEndOfGameState == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
         }
 
         [UnityTest]
         public IEnumerator Test_AIPlaysAsPlayer_OnLoadedScene_Deep_8_vs_Deep_4_Giveaways()
         {
-            GameSettings.Instance.SetIsGiveaways(true);
+            GameSettings.Instance.IsGiveaways = true;
 
             // Загружаем сцену
             SceneManager.LoadScene(SceneNames.Game);
             yield return null;
 
             // Создаем объект AI и добавляем компонент
-            GameSettings.Instance.SetAISearchDeep(8); // big brain time on
+            GameSettings.Instance.AISearchDeep = 8; // big brain time on
 
             _aiGameObject = new GameObject("TestAIPlaysAsPlayer");
             _aiComponent = _aiGameObject.AddComponent<CheckersAI>();
@@ -76,13 +76,13 @@ namespace Tests.PlayMode
             yield return null;
 
             // Act - Ждем
-            while (GameState.EndOfGame == EndOfGameType.None)
+            while (GameManager.Instance.CurrentEndOfGameState == EndOfGameType.None)
             {
                 yield return new WaitForSeconds(0.3f);
             }
 
             // Assert
-            Assert.IsTrue(GameState.EndOfGame == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
+            Assert.IsTrue(GameManager.Instance.CurrentEndOfGameState == EndOfGameType.PlayerWin, "AI с big brain time должен тащить");
         }
 
         private List<CheckerData> CreateCustomBoard()
@@ -112,7 +112,7 @@ namespace Tests.PlayMode
                         continue;
                     }
 
-                    checkers.Add(new CheckerData(x, y, CheckerType.USUAL, type, 8, 8));
+                    checkers.Add(new CheckerData(x, y, CheckerType.Usual, type, 8, 8));
                 }
             }
 

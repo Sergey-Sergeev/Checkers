@@ -5,7 +5,8 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Core",
-        "GamePlay"
+        "GameLogic",
+        "Infrastructure"
     ],
     "includePlatforms": [
         "Editor"
